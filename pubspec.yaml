@@ -1,0 +1,45 @@
+name: wovie
+description: Yet another movie app.
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+#  cached_network_image: ^3.1.0
+  optimized_cached_image: ^3.0.0
+  flutter_rating_bar: ^4.0.0
+  shared_preferences: ^2.0.7
+  percent_indicator: ^3.0.1
+#  animated_widgets: ^1.1.0
+  flutter_spinkit: ^5.1.0
+  pull_to_refresh: ^2.0.0
+#  fluttertoast: ^8.0.8
+  sqflite: ^2.0.0+4
+  http: ^0.13.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - images/
+
+  fonts:
+    - family: SourceSansPro
+      fonts:
+        - asset: fonts/SourceSansPro-Regular.ttf
+        - asset: fonts/SourceSansPro-Italic.ttf
+          style: italic
+        - asset: fonts/SourceSansPro-Bold.ttf
+          weight: 700
+
