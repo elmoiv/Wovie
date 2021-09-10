@@ -3,8 +3,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/constants.dart';
-import 'package:wovie/model/actor.dart';
-import 'package:wovie/model/movie.dart';
+import 'package:wovie/models/actor.dart';
+import 'package:wovie/models/movie.dart';
+import 'package:wovie/widgets/details_section.dart';
 import '../utils/readmore.dart';
 import 'package:wovie/widgets/msg_box.dart';
 import 'package:wovie/widgets/movie_list_horizontal.dart';
@@ -28,7 +29,7 @@ class _ActorScreenState extends State<ActorScreen> {
       try {
         return await tmdb.getActor(actor.actorId!);
       } catch (e) {
-        ErrorMsg(context, e);
+        errorMsg(context, e);
         return Actor();
       }
     }
@@ -36,6 +37,7 @@ class _ActorScreenState extends State<ActorScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: ScrollPhysics(),
           child: FutureBuilder<Actor>(
             future: getActor(),
             builder: (context, AsyncSnapshot<Actor> snapshot) {
@@ -66,6 +68,7 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
           children: [
             Center(
               child: OptimizedCacheImage(
+                fadeInDuration: Duration(milliseconds: 300),
                 fadeOutDuration: Duration(milliseconds: 300),
                 imageUrl: actor.actorPhoto!,
                 placeholder: (context, url) => cachedActorPlaceholder(context),
@@ -82,7 +85,7 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
         SizedBox(
           height: 20,
         ),
-        detailsSection(
+        DetailsSection(
           title: 'Birth Info',
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -92,7 +95,7 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
           ),
           verticalPadding: 15,
         ),
-        detailsSection(
+        DetailsSection(
           title: 'Biography',
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -120,7 +123,7 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
           ),
           verticalPadding: 15,
         ),
-        detailsSection(
+        DetailsSection(
           title: 'Known For',
           child: FutureBuilder<List<Movie>>(
             future: tmdb.getActorMovies(actor.actorId!),
@@ -136,43 +139,6 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
         ),
       ],
     ),
-  );
-}
-
-Widget detailsSection({String? title, dynamic child, double? verticalPadding}) {
-  return Column(
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            '| ',
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              color: Color(0xfffb6a17),
-            ),
-          ),
-          Text(
-            title!,
-            textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-      SizedBox(
-        height: 5,
-      ),
-      child!,
-      SizedBox(
-        height: verticalPadding!,
-      )
-    ],
   );
 }
 

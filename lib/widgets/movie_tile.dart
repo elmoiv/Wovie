@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:wovie/api/tmdb_helper.dart';
-import 'package:wovie/model/movie.dart';
+import 'package:wovie/models/movie.dart';
 import 'package:wovie/constants.dart';
 import 'package:wovie/screens/movie_screen.dart';
+import 'package:wovie/utils/easy_navigator.dart';
 
 class MovieTile extends StatefulWidget {
   final Movie? movie;
@@ -21,17 +21,17 @@ class _MovieTileState extends State<MovieTile> {
   Widget build(BuildContext context) {
     Movie movie = widget.movie!;
     TMDB tmdb = widget.tmdb!;
+
     double screenWidth = MediaQuery.of(context).size.width;
     return Container(
       child: RawMaterialButton(
         onPressed: () {
-          Navigator.push(
+          navPushTo(
             context,
-            MaterialPageRoute(
-              builder: (context) => MovieScreen(
-                movie: movie,
-                tmdb: tmdb,
-              ),
+            MovieScreen(
+              movie: movie,
+              tmdb: tmdb,
+              heroKey: '${movie.movieId}-Tile',
             ),
           );
         },
@@ -60,9 +60,10 @@ class _MovieTileState extends State<MovieTile> {
                   Expanded(
                     flex: 7,
                     child: Hero(
-                      tag: '${movie.movieId}',
+                      tag: '${movie.movieId}-Tile',
                       child: OptimizedCacheImage(
                         fit: BoxFit.cover,
+                        fadeInDuration: Duration(milliseconds: 300),
                         fadeOutDuration: Duration(milliseconds: 300),
                         imageUrl: widget.movie!.moviePoster!,
                         placeholder: (context, url) => cachedPlaceholder(),
@@ -152,8 +153,9 @@ class _MovieTileState extends State<MovieTile> {
                             Flexible(
                               fit: FlexFit.loose,
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                ),
                                 child: Text(
                                   tmdbDate(movie.movieRelease),
                                   overflow: TextOverflow.fade,
@@ -179,121 +181,6 @@ class _MovieTileState extends State<MovieTile> {
   }
 }
 
-/// Old Movie Tile Backup
-// class _MovieTileState extends State<MovieTile> {
-//   @override
-//   Widget build(BuildContext context) {
-//     Movie movie = widget.movie!;
-//     TMDB tmdb = widget.tmdb!;
-//     return Padding(
-//       padding: const EdgeInsets.all(2),
-//       child: Container(
-//         child: RawMaterialButton(
-//           onPressed: () {
-//             Navigator.push(
-//               context,
-//               MaterialPageRoute(
-//                 builder: (context) => MovieScreen(
-//                   movie: movie,
-//                   tmdb: tmdb,
-//                 ),
-//               ),
-//             );
-//           },
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(kCircularBorderRadius),
-//           ),
-//           child: Stack(
-//             children: [
-//               Hero(
-//                 tag: '${movie.movieTitle}',
-//                 child: CachedNetworkImage(
-//                   fit: BoxFit.cover,
-//                   fadeOutDuration: Duration(milliseconds: 300),
-//                   imageUrl: widget.movie!.moviePoster!,
-//                   placeholder: (context, url) => cachedPlaceholder(),
-//                   errorWidget: (context, url, error) => Icon(Icons.error),
-//                   imageBuilder: (context, imageProvider) =>
-//                       cachedRealImage(imageProvider),
-//                 ),
-//               ),
-//               Container(
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.all(
-//                     Radius.circular(kCircularBorderRadius),
-//                   ),
-//                   gradient: LinearGradient(
-//                     begin: Alignment.bottomCenter,
-//                     end: Alignment.topCenter,
-//                     colors: [
-//                       Colors.black.withOpacity(0.7),
-//                       Colors.black.withOpacity(0.0)
-//                     ],
-//                     stops: [0.0, 0.6],
-//                   ),
-//                 ),
-//               ),
-//               Positioned(
-//                 bottom: 5,
-//                 left: 5,
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Container(
-//                       width: MediaQuery.of(context).size.width / 3.3,
-//                       child: Text(
-//                         '${widget.movie!.movieTitle}',
-//                         overflow: TextOverflow.ellipsis,
-//                         style: TextStyle(
-//                           fontSize: MediaQuery.of(context).size.width / 30,
-//                           color: Colors.white,
-//                           fontWeight: FontWeight.bold,
-//                         ),
-//                       ),
-//                     ),
-//                     SizedBox(height: 4),
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.start,
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         RatingBar.builder(
-//                           ignoreGestures: true,
-//                           initialRating: movie.movieRate! * .5,
-//                           minRating: 1,
-//                           direction: Axis.horizontal,
-//                           allowHalfRating: true,
-//                           itemCount: 5,
-//                           itemSize: MediaQuery.of(context).size.width / 30,
-//                           itemBuilder: (context, _) => Icon(
-//                             Icons.star,
-//                             color: Color(0xfffb6a17),
-//                           ),
-//                           unratedColor: Colors.white,
-//                           onRatingUpdate: (rating) {},
-//                         ),
-//                         SizedBox(
-//                           width: 5,
-//                         ),
-//                         Text(
-//                           '${widget.movie!.movieRate!.toStringAsFixed(1)}',
-//                           style: TextStyle(
-//                             fontSize: MediaQuery.of(context).size.width / 30,
-//                             color: Colors.white,
-//                             fontWeight: FontWeight.bold,
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 String tmdbDate(String? apiDate) {
   List dateParts = apiDate!.split('-');
   if (dateParts.length < 3) return 'Coming Soon';

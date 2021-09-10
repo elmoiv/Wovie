@@ -1,5 +1,5 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:wovie/model/movie.dart';
+import 'package:wovie/models/movie.dart';
 import 'db_constants.dart';
 
 class DbHelper {

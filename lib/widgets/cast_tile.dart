@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
-import 'package:wovie/api/tmdb_constants.dart';
-import 'package:wovie/model/actor.dart';
+import 'package:wovie/models/actor.dart';
 
 Widget castTile(Actor actor) {
   return Column(
@@ -10,6 +9,7 @@ Widget castTile(Actor actor) {
     children: [
       OptimizedCacheImage(
         fit: BoxFit.cover,
+        fadeInDuration: Duration(milliseconds: 300),
         fadeOutDuration: Duration(milliseconds: 300),
         imageUrl: actor.actorPhoto!,
         placeholder: (context, url) => circularContainer(

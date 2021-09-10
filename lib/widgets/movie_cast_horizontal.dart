@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/screens/actor_screen.dart';
+import 'package:wovie/utils/easy_navigator.dart';
 import 'package:wovie/widgets/cast_tile.dart';
 
 Widget castMovieListView(context, List castList, TMDB tmdb) {
@@ -14,13 +15,11 @@ Widget castMovieListView(context, List castList, TMDB tmdb) {
       itemBuilder: (context, index) {
         return RawMaterialButton(
           onPressed: () {
-            Navigator.push(
+            navPushTo(
               context,
-              MaterialPageRoute(
-                builder: (context) => ActorScreen(
-                  actor: castList[index],
-                  tmdb: tmdb,
-                ),
+              ActorScreen(
+                actor: castList[index],
+                tmdb: tmdb,
               ),
             );
           },

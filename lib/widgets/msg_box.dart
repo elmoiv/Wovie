@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants.dart';
 
 class MsgBox extends StatelessWidget {
   final String? title;
@@ -22,7 +21,7 @@ class MsgBox extends StatelessWidget {
   }
 }
 
-dynamic ErrorMsg(context, e) {
+dynamic errorMsg(context, e) {
   return showDialog(
     context: context,
     builder: (BuildContext context) => MsgBox(

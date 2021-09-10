@@ -1,19 +1,20 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/constants.dart';
-import 'package:wovie/model/actor.dart';
-import 'package:wovie/model/movie.dart';
+import 'package:wovie/models/actor.dart';
+import 'package:wovie/models/movie.dart';
+import 'package:wovie/widgets/details_section.dart';
 import 'package:wovie/widgets/movie_cast_horizontal.dart';
 import 'package:wovie/widgets/movie_list_horizontal.dart';
 
 class MovieScreen extends StatefulWidget {
   final Movie? movie;
   final TMDB? tmdb;
-  MovieScreen({this.movie, this.tmdb});
+  final String? heroKey;
+  MovieScreen({this.movie, this.tmdb, this.heroKey});
 
   @override
   _MovieScreenState createState() => _MovieScreenState();
@@ -38,6 +39,7 @@ class _MovieScreenState extends State<MovieScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: ScrollPhysics(),
           child: Container(
             child: Column(
               children: [
@@ -45,12 +47,13 @@ class _MovieScreenState extends State<MovieScreen> {
                   children: [
                     Center(
                       child: OptimizedCacheImage(
+                        fadeInDuration: Duration(milliseconds: 300),
                         fadeOutDuration: Duration(milliseconds: 300),
                         imageUrl: movie.movieBackground!,
-                        placeholder: (context, url) =>
-                            cachedBackgroundPlaceholder(),
-                        errorWidget: (context, url, error) =>
-                            cachedBackgroundPlaceholder(error: true),
+                        // placeholder: (context, url) =>
+                        //     cachedBackgroundPlaceholder(),
+                        // errorWidget: (context, url, error) =>
+                        //     cachedBackgroundPlaceholder(error: true),
                         imageBuilder: (context, imageProvider) =>
                             cachedBackgroundRealImage(imageProvider),
                       ),
@@ -62,10 +65,11 @@ class _MovieScreenState extends State<MovieScreen> {
                             height: 130,
                           ),
                           Hero(
-                            tag: '${movie.movieId}',
+                            tag: widget.heroKey!,
                             child: Card(
                               elevation: 10,
                               child: OptimizedCacheImage(
+                                fadeInDuration: Duration(milliseconds: 300),
                                 fadeOutDuration: Duration(milliseconds: 300),
                                 imageUrl: movie.moviePoster!,
                                 placeholder: (context, url) =>
@@ -192,7 +196,7 @@ class _MovieScreenState extends State<MovieScreen> {
                 SizedBox(
                   height: 18,
                 ),
-                detailsSection(
+                DetailsSection(
                   title: 'Plot Summary',
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -207,7 +211,7 @@ class _MovieScreenState extends State<MovieScreen> {
                   ),
                   verticalPadding: 15,
                 ),
-                detailsSection(
+                DetailsSection(
                   title: 'Cast',
                   child: FutureBuilder<List<Actor>>(
                     future: tmdb.getCast(movie.movieId!),
@@ -222,7 +226,7 @@ class _MovieScreenState extends State<MovieScreen> {
                   ),
                   verticalPadding: 15,
                 ),
-                detailsSection(
+                DetailsSection(
                   title: 'Similar Movies',
                   child: FutureBuilder<List<Movie>>(
                     future: tmdb.getSimilar(movie.movieId!),
@@ -245,43 +249,6 @@ class _MovieScreenState extends State<MovieScreen> {
       ),
     );
   }
-}
-
-Widget detailsSection({String? title, dynamic child, double? verticalPadding}) {
-  return Column(
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            '| ',
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              color: Color(0xfffb6a17),
-            ),
-          ),
-          Text(
-            title!,
-            textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-      SizedBox(
-        height: 5,
-      ),
-      child!,
-      SizedBox(
-        height: verticalPadding!,
-      )
-    ],
-  );
 }
 
 Widget underTitleText(Movie movie, TMDB tmdb, int duration) {

@@ -5,7 +5,7 @@ import 'bottom_pages/watchlist_screen.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({this.apiKey});
-  String? apiKey;
+  final String? apiKey;
 
   @override
   _MainScreenState createState() => _MainScreenState();

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:wovie/api/tmdb_constants.dart';
-import 'package:wovie/model/movie.dart';
-import 'package:wovie/model/actor.dart';
+import 'package:wovie/models/movie.dart';
+import 'package:wovie/models/actor.dart';
 
 class TMDB {
   int pageNumber = 1;
@@ -26,28 +26,7 @@ class TMDB {
 
   String? _toGenre(dynamic genreList) {
     dynamic genre = genreList.length != 0 ? genreList[0] : -1;
-    Map<int, String> genreMap = {
-      28: 'Action',
-      12: 'Adventure',
-      16: 'Animation',
-      35: 'Comedy',
-      80: 'Crime',
-      99: 'Documentary',
-      18: 'Drama',
-      10751: 'Family',
-      14: 'Fantasy',
-      36: 'History',
-      27: 'Horror',
-      10402: 'Music',
-      9648: 'Mystery',
-      10749: 'Romance',
-      878: 'Science Fiction',
-      10770: 'TV Movie',
-      53: 'Thriller',
-      10752: 'War',
-      37: 'Western'
-    };
-    return genreMap.containsKey(genre) ? genreMap[genre] : 'None';
+    return genreIntStr.containsKey(genre) ? genreIntStr[genre] : 'None';
   }
 
   Future<dynamic> _getJson(String url) async {
@@ -74,7 +53,7 @@ class TMDB {
 
     // Some release dates does not exist
     dynamic release = _checkJsonKey(json, 'release_date', 'Coming Soon');
-    dynamic releaseDate = release != null ? release : 'Coming Soon';
+    dynamic releaseDate = release ?? 'Coming Soon';
 
     return Movie(
       movieId: json['id'],
@@ -105,8 +84,8 @@ class TMDB {
       actorId: json['id'],
       actorName: json['name'],
       actorBiography: bio == '' ? 'No Biography found.' : bio,
-      actorBirthday: birthday.runtimeType == Null ? 'Unknown' : birthday,
-      actorBirthplace: birthplace.runtimeType == Null ? 'Unknown' : birthplace,
+      actorBirthday: birthday ?? 'Unknown',
+      actorBirthplace: birthplace ?? 'Unknown',
       actorRate: double.parse(json['popularity'].toString()),
       actorPhoto: profilePic,
       actorGender: gender,
@@ -144,6 +123,28 @@ class TMDB {
     return json['results'].map<Movie>((e) => this._toMovie(e)).toList();
   }
 
+  Future<String> getMovieVideoKey(int id) async {
+    dynamic json = await this._getJson('$movieUrl$id/videos?api_key=$API_KEY');
+
+    if (json.containsKey('errors')) {
+      return '';
+    }
+
+    return json['results'][0]['key'];
+  }
+
+  Future<List<Movie>> getByGenre({String? genre}) async {
+    int? genreId = genreStrInt[genre];
+    dynamic json =
+        await this._getJson('$genreUrl?api_key=$API_KEY&with_genres=$genreId');
+
+    if (json.containsKey('errors')) {
+      return [];
+    }
+
+    return json['results'].map<Movie>((e) => this._toMovie(e)).toList();
+  }
+
   Future<List<Movie>> getPopular() async {
     dynamic json =
         await this._getJson('$popularUrl?api_key=$API_KEY&page=$pageNumber');
@@ -153,6 +154,17 @@ class TMDB {
     }
 
     this.pageNumber++;
+    return json['results'].map<Movie>((e) => this._toMovie(e)).toList();
+  }
+
+  Future<List<Movie>> getUpcoming() async {
+    dynamic json =
+        await this._getJson('$upcomingUrl?api_key=$API_KEY&page=$pageNumber');
+
+    if (json.containsKey('errors')) {
+      return [];
+    }
+
     return json['results'].map<Movie>((e) => this._toMovie(e)).toList();
   }
 
@@ -206,19 +218,19 @@ class TMDB {
       return [];
     }
 
-    List json_sorted = json['cast'];
+    List jsonSorted = json['cast'];
     try {
-      json_sorted.sort((a, b) {
+      jsonSorted.sort((a, b) {
         return int.parse(b['vote_count'].toString())
             .toInt()
             .compareTo(int.parse(a['vote_count'].toString()).toInt());
       });
     } catch (e) {
-      json_sorted = json['cast'];
+      jsonSorted = json['cast'];
     }
 
-    int takenItemCount = json_sorted.length < 20 ? json_sorted.length : 20;
-    return json_sorted
+    int takenItemCount = jsonSorted.length < 20 ? jsonSorted.length : 20;
+    return jsonSorted
         .take(takenItemCount)
         .map<Movie>((e) => this._toMovie(e))
         .toList();
