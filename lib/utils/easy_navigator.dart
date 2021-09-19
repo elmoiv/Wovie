@@ -9,11 +9,16 @@ void navPushTo(context, screen) {
   );
 }
 
-void navPushRepTo(context, screen) {
+void navPushRepTo(context, screen, {bool noAnimation = false}) {
   Navigator.pushReplacement(
     context,
-    MaterialPageRoute(
-      builder: (context) => screen,
-    ),
+    noAnimation
+        ? PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => screen,
+            transitionDuration: Duration.zero,
+          )
+        : MaterialPageRoute(
+            builder: (context) => screen,
+          ),
   );
 }

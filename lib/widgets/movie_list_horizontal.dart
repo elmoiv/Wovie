@@ -3,7 +3,7 @@ import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/widgets/movie_tile.dart';
 
-Widget movieHorizontalListView(context, List<Movie> movieList, TMDB tmdb,
+Widget movieHorizontalListView(context, List<Movie> movieList,
     {double? height}) {
   height = height ?? MediaQuery.of(context).size.height * .3;
   double width = height * .5;
@@ -18,7 +18,6 @@ Widget movieHorizontalListView(context, List<Movie> movieList, TMDB tmdb,
           width: width,
           child: MovieTile(
             movie: movieList[index],
-            tmdb: tmdb,
           ),
         );
       },

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/constants.dart';
 import 'package:wovie/screens/movie_screen.dart';
@@ -9,8 +8,7 @@ import 'package:wovie/utils/easy_navigator.dart';
 
 class MovieTile extends StatefulWidget {
   final Movie? movie;
-  final TMDB? tmdb;
-  MovieTile({this.movie, this.tmdb});
+  MovieTile({this.movie});
 
   @override
   _MovieTileState createState() => _MovieTileState();
@@ -20,7 +18,6 @@ class _MovieTileState extends State<MovieTile> {
   @override
   Widget build(BuildContext context) {
     Movie movie = widget.movie!;
-    TMDB tmdb = widget.tmdb!;
 
     double screenWidth = MediaQuery.of(context).size.width;
     return Container(
@@ -30,7 +27,6 @@ class _MovieTileState extends State<MovieTile> {
             context,
             MovieScreen(
               movie: movie,
-              tmdb: tmdb,
               heroKey: '${movie.movieId}-Tile',
             ),
           );
@@ -51,129 +47,135 @@ class _MovieTileState extends State<MovieTile> {
               )
             ],
           ),
-          child: Stack(
-            children: [
-              /// Picture and text container
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return Stack(
                 children: [
-                  Expanded(
-                    flex: 7,
-                    child: Hero(
-                      tag: '${movie.movieId}-Tile',
-                      child: OptimizedCacheImage(
-                        fit: BoxFit.cover,
-                        fadeInDuration: Duration(milliseconds: 300),
-                        fadeOutDuration: Duration(milliseconds: 300),
-                        imageUrl: widget.movie!.moviePoster!,
-                        placeholder: (context, url) => cachedPlaceholder(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                        imageBuilder: (context, imageProvider) =>
-                            cachedRealImage(imageProvider),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(kCircularBorderRadius),
-                          bottomRight: Radius.circular(kCircularBorderRadius),
+                  /// Picture and text container
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        flex: 7,
+                        child: Hero(
+                          tag: '${movie.movieId}-Tile',
+                          child: OptimizedCacheImage(
+                            fit: BoxFit.cover,
+                            fadeInDuration: Duration(milliseconds: 300),
+                            fadeOutDuration: Duration(milliseconds: 300),
+                            imageUrl: widget.movie!.moviePoster!,
+                            placeholder: (context, url) => cachedPlaceholder(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            imageBuilder: (context, imageProvider) =>
+                                cachedRealImage(imageProvider),
+                          ),
                         ),
                       ),
-                      // child: Text('df'),
-                    ),
-                  ),
-                ],
-              ),
-
-              /// Percentage Circular
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(flex: 6, child: Container()),
-                  Expanded(
-                    flex: 2,
-                    child: Center(
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 6,
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft:
+                                  Radius.circular(kCircularBorderRadius),
+                              bottomRight:
+                                  Radius.circular(kCircularBorderRadius),
+                            ),
                           ),
-                          percentIndicator(
-                            percent: movie.movieRate! * 10,
-                            radius: screenWidth - 10,
-                          ),
-                        ],
+                          // child: Text('df'),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  Expanded(
-                    child: Container(),
-                  ),
-                ],
-              ),
 
-              /// Title and Date
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(flex: 109, child: Container()),
-                  Expanded(
-                    flex: 18,
-                    child: Column(
-                      children: [
-                        Row(
+                  /// Percentage Circular
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(flex: 583, child: Container()),
+                      Expanded(
+                        flex: 217,
+                        child: Center(
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: constraints.maxWidth / 17,
+                              ),
+                              percentIndicator(
+                                percent: movie.movieRate! * 10,
+                                radius: constraints.maxWidth * 3.2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 100,
+                        child: Container(),
+                      ),
+                    ],
+                  ),
+
+                  /// Title and Date
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(flex: 108, child: Container()),
+                      Expanded(
+                        flex: 19,
+                        child: Column(
                           children: [
-                            Flexible(
-                              fit: FlexFit.loose,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 6),
-                                child: Text(
-                                  movie.movieTitle!,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                    fontSize: screenWidth / 35,
-                                    fontWeight: FontWeight.bold,
+                            Row(
+                              children: [
+                                Flexible(
+                                  fit: FlexFit.loose,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: constraints.maxWidth / 17,
+                                    ),
+                                    child: Text(
+                                      movie.movieTitle!,
+                                      overflow: TextOverflow.fade,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                        fontSize: constraints.maxWidth / 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                  fit: FlexFit.loose,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: constraints.maxWidth / 17,
+                                    ),
+                                    child: Text(
+                                      tmdbDate(movie.movieRelease),
+                                      overflow: TextOverflow.fade,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                          fontSize: constraints.maxWidth / 10,
+                                          color: Color(0x77000000)),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        // SizedBox(
-                        //   height: 2,
-                        // ),
-                        Row(
-                          children: [
-                            Flexible(
-                              fit: FlexFit.loose,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                ),
-                                child: Text(
-                                  tmdbDate(movie.movieRelease),
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      fontSize: screenWidth / 38,
-                                      color: Color(0x77000000)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -220,18 +222,18 @@ Widget percentIndicator({double percent = 100, double radius = 50}) {
   int percentColor = relatedColor();
 
   return Container(
-    width: radius / 15 + 3,
-    height: radius / 15 + 3,
+    width: radius / 15 + radius / 215,
+    height: radius / 15 + radius / 215,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(
-        radius / 15 + 3,
+        radius / 15 + radius / 215,
       ),
       color: Color(0xff081c22),
     ),
     child: Center(
       child: CircularPercentIndicator(
         radius: radius / 15,
-        lineWidth: 1.5,
+        lineWidth: radius / 226,
         backgroundColor: Color(percentColor - 0xbb000000),
         progressColor: Color(percentColor),
         percent: percent / 100,
@@ -257,7 +259,7 @@ Widget percentIndicator({double percent = 100, double radius = 50}) {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        fontSize: radius / 34 - 5,
+                        fontSize: radius / 34 - radius / 60,
                       ),
                     ),
                   ),

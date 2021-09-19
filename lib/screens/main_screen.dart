@@ -4,9 +4,6 @@ import 'bottom_pages/home_screen.dart';
 import 'bottom_pages/watchlist_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({this.apiKey});
-  final String? apiKey;
-
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -31,6 +28,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) => _onItemTapped(index),
+        elevation: 10,
         currentIndex: curIndex,
         items: [
           BottomNavigationBarItem(
@@ -54,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
         },
         children: [
           WatchlistScreen(),
-          HomeScreen(apiKey: widget.apiKey),
+          HomeScreen(),
           FavouritesScreen(),
         ],
       ),

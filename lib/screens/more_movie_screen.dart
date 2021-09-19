@@ -7,34 +7,68 @@ import '../widgets/movie_grid_view.dart';
 import 'package:wovie/widgets/msg_box.dart';
 
 class MoreMoviesScreen extends StatefulWidget {
-  final String? apiKey;
-  MoreMoviesScreen({this.apiKey});
+  final String? title;
+  final Function? movieFunc;
+  final bool? addMoviesWordAtTheEnd;
+  final String? customErrorMsg;
+  MoreMoviesScreen(
+      {this.title,
+      this.movieFunc,
+      this.addMoviesWordAtTheEnd = true,
+      this.customErrorMsg = 'Nothing Found'});
 
   @override
   _MoreMoviesScreenState createState() => _MoreMoviesScreenState();
 }
 
 class _MoreMoviesScreenState extends State<MoreMoviesScreen> {
-  TMDB? tmdb;
-  List<Movie> homeMovieList = [];
+  TMDB tmdb = TMDB();
+  List<Movie> moviesList = [];
+  bool firstTimeSearch = true;
   RefreshController _controller = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     super.initState();
-    tmdb = TMDB();
-    tmdb!.resetPages();
-    tmdb!.API_KEY = widget.apiKey!;
-    getPopular();
+    tmdb.resetPages();
+    getMovies();
   }
 
-  void getPopular() async {
+  void getMovies(
+      {bool append = false, List<void Function()>? refreshFuncs}) async {
     try {
-      dynamic x = await tmdb!.getPopular();
+      dynamic x = await widget.movieFunc!();
+
       setState(() {
-        homeMovieList = x;
+        if (append) {
+          moviesList.addAll(x);
+        } else {
+          moviesList = x;
+        }
       });
+
+      if (firstTimeSearch == true && x.length == 0) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => MsgBox(
+            title: 'No Movies Found',
+            content: widget.customErrorMsg,
+          ),
+        );
+      }
+
+      firstTimeSearch = false;
+
+      // Success sent from controller
+      if (refreshFuncs != null) refreshFuncs[0]();
     } catch (e) {
+      // Fail sent from controller
+      if (refreshFuncs != null) refreshFuncs[1]();
+
+      setState(() {
+        moviesList = append ? moviesList : [];
+      });
+
       showDialog(
         context: context,
         builder: (BuildContext context) => MsgBox(
@@ -42,19 +76,18 @@ class _MoreMoviesScreenState extends State<MoreMoviesScreen> {
           content: e.toString(),
         ),
       );
-      setState(() {
-        homeMovieList = [];
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool movieWord = widget.addMoviesWordAtTheEnd!;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
-          'Popular Movies',
-          style: TextStyle(color: kMaterialBlueColor),
+          '${widget.title}${movieWord ? " Movies" : ""}',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -73,39 +106,26 @@ class _MoreMoviesScreenState extends State<MoreMoviesScreen> {
                     controller: _controller,
                     header: null,
                     footer: ClassicFooter(loadStyle: LoadStyle.ShowWhenLoading),
-                    child: movieGridView(context, homeMovieList, tmdb!),
+                    child: movieGridView(context, moviesList),
                     onLoading: () async {
-                      Future.delayed(Duration(milliseconds: 500), () {});
-                      dynamic x = [];
-                      try {
-                        x = await tmdb!.getPopular();
-                      } catch (e) {
-                        errorMsg(context, e);
-                        _controller.loadFailed();
-                        return;
-                      }
-                      setState(() {
-                        homeMovieList.addAll(x);
-                      });
-                      _controller.loadComplete();
+                      // Future.delayed(Duration(milliseconds: 300), () {});
+                      getMovies(
+                        append: true,
+                        refreshFuncs: [
+                          _controller.loadComplete,
+                          _controller.loadFailed
+                        ],
+                      );
                     },
                     onRefresh: () async {
-                      setState(() {
-                        homeMovieList = [];
-                      });
-                      tmdb!.resetPages();
-                      dynamic x = [];
-                      try {
-                        x = await tmdb!.getPopular();
-                      } catch (e) {
-                        errorMsg(context, e);
-                        _controller.refreshFailed();
-                        return;
-                      }
-                      setState(() {
-                        homeMovieList = x;
-                      });
-                      _controller.refreshCompleted();
+                      tmdb.resetPages();
+                      getMovies(
+                        append: false,
+                        refreshFuncs: [
+                          _controller.refreshCompleted,
+                          _controller.refreshFailed
+                        ],
+                      );
                     },
                   ),
                 ),

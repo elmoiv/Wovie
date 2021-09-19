@@ -10,8 +10,7 @@ import 'package:wovie/utils/transparent_page_route.dart';
 
 class UpcomingMovieTile extends StatefulWidget {
   final Movie? movie;
-  final TMDB? tmdb;
-  UpcomingMovieTile({this.movie, this.tmdb});
+  UpcomingMovieTile({this.movie});
 
   @override
   _UpcomingMovieTileState createState() => _UpcomingMovieTileState();
@@ -21,7 +20,7 @@ class _UpcomingMovieTileState extends State<UpcomingMovieTile> {
   @override
   Widget build(BuildContext context) {
     Movie movie = widget.movie!;
-    TMDB tmdb = widget.tmdb!;
+    TMDB tmdb = TMDB();
     double screenWidth = MediaQuery.of(context).size.width;
     return RawMaterialButton(
       onPressed: () {
@@ -29,7 +28,6 @@ class _UpcomingMovieTileState extends State<UpcomingMovieTile> {
           context,
           MovieScreen(
             movie: movie,
-            tmdb: tmdb,
             heroKey: '${movie.movieId}-upcoming',
           ),
         );

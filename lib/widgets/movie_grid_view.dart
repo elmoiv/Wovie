@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/widgets/movie_tile.dart';
 
-Widget movieGridView(context, List<Movie> movieList, TMDB tmdb) {
+Widget movieGridView(context, List<Movie> movieList) {
   return GridView.builder(
     physics: ScrollPhysics(),
     scrollDirection: Axis.vertical,
@@ -18,7 +17,6 @@ Widget movieGridView(context, List<Movie> movieList, TMDB tmdb) {
     itemBuilder: (context, index) {
       return MovieTile(
         movie: movieList[index],
-        tmdb: tmdb,
       );
     },
   );

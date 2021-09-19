@@ -6,35 +6,40 @@ import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/constants.dart';
 import 'package:wovie/models/actor.dart';
 import 'package:wovie/models/movie.dart';
+import 'package:wovie/screens/youtube_screen.dart';
+import 'package:wovie/utils/transparent_page_route.dart';
 import 'package:wovie/widgets/details_section.dart';
-import 'package:wovie/widgets/movie_cast_horizontal.dart';
+import 'package:wovie/widgets/stack_icon_button.dart';
+import 'package:wovie/widgets/actors_list_horizontal.dart';
 import 'package:wovie/widgets/movie_list_horizontal.dart';
 
 class MovieScreen extends StatefulWidget {
   final Movie? movie;
-  final TMDB? tmdb;
   final String? heroKey;
-  MovieScreen({this.movie, this.tmdb, this.heroKey});
+  MovieScreen({this.movie, this.heroKey});
 
   @override
   _MovieScreenState createState() => _MovieScreenState();
 }
 
 class _MovieScreenState extends State<MovieScreen> {
-  Icon favIcon = Icon(Icons.favorite_border, color: Colors.white);
-  Icon watchIcon = Icon(Icons.bookmark_border, color: Colors.white);
+  IconData favIcon = Icons.favorite_border;
+  IconData watchIcon = Icons.bookmark_border;
   bool favIconDefault = true;
   bool watchIconDefault = true;
 
   @override
   Widget build(BuildContext context) {
     Movie movie = widget.movie!;
-    TMDB tmdb = widget.tmdb!;
+    TMDB tmdb = TMDB();
 
     Future<int> getDuration(int movieId) async {
       Movie m = await tmdb.getMovie(movieId);
       return m.movieDuration!;
     }
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: SafeArea(
@@ -45,24 +50,29 @@ class _MovieScreenState extends State<MovieScreen> {
               children: [
                 Stack(
                   children: [
+                    /// Background Movie Image
                     Center(
                       child: OptimizedCacheImage(
                         fadeInDuration: Duration(milliseconds: 300),
                         fadeOutDuration: Duration(milliseconds: 300),
                         imageUrl: movie.movieBackground!,
-                        // placeholder: (context, url) =>
-                        //     cachedBackgroundPlaceholder(),
-                        // errorWidget: (context, url, error) =>
-                        //     cachedBackgroundPlaceholder(error: true),
+                        placeholder: (context, url) =>
+                            cachedBackgroundPlaceholder(screenHeight),
+                        errorWidget: (context, url, error) =>
+                            cachedBackgroundPlaceholder(screenHeight,
+                                error: true),
                         imageBuilder: (context, imageProvider) =>
-                            cachedBackgroundRealImage(imageProvider),
+                            cachedBackgroundRealImage(
+                                screenHeight, imageProvider),
                       ),
                     ),
+
+                    /// Poster Image
                     Center(
                       child: Column(
                         children: [
                           SizedBox(
-                            height: 130,
+                            height: screenHeight / 6,
                           ),
                           Hero(
                             tag: widget.heroKey!,
@@ -84,49 +94,114 @@ class _MovieScreenState extends State<MovieScreen> {
                         ],
                       ),
                     ),
+
+                    /// Shadow behind icons
+                    Container(
+                      width: double.infinity,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.center,
+                          colors: [
+                            Colors.black.withOpacity(0.6),
+                            Colors.black.withOpacity(0.0)
+                          ],
+                          stops: [0.0, 0.8],
+                        ),
+                      ),
+                    ),
+
+                    /// Back Arrow, watch later and favourite icon buttons
                     Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
+                          StackIconButton(
+                            icon: Icons.arrow_back,
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            icon: Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
                           ),
                           Row(
                             children: [
-                              IconButton(
+                              StackIconButton(
+                                icon: watchIcon,
+                                color: watchIconDefault
+                                    ? Colors.white
+                                    : Colors.lime,
                                 onPressed: () {
                                   setState(() {
                                     watchIcon = watchIconDefault
-                                        ? Icon(Icons.bookmark,
-                                            color: Colors.lime)
-                                        : Icon(Icons.bookmark_border,
-                                            color: Colors.white);
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_border;
                                     watchIconDefault = !watchIconDefault;
                                   });
                                 },
-                                icon: watchIcon,
                               ),
-                              IconButton(
+                              StackIconButton(
+                                icon: favIcon,
+                                color:
+                                    favIconDefault ? Colors.white : Colors.red,
                                 onPressed: () {
                                   setState(() {
                                     favIcon = favIconDefault
-                                        ? Icon(Icons.favorite,
-                                            color: Colors.red)
-                                        : Icon(Icons.favorite_border,
-                                            color: Colors.white);
+                                        ? Icons.favorite
+                                        : Icons.favorite_border;
                                     favIconDefault = !favIconDefault;
                                   });
                                 },
-                                icon: favIcon,
-                              )
+                              ),
                             ],
                           )
+                        ],
+                      ),
+                    ),
+
+                    /// Youtube Trailer Button
+                    Center(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: screenHeight / 6 - 80,
+                          ),
+                          RawMaterialButton(
+                            constraints: BoxConstraints(
+                              maxHeight: screenWidth / 5,
+                              maxWidth: screenWidth / 5,
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth / 5)),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                TransparentRoute(
+                                  builder: (context) => YoutubeScreen(
+                                    movieId: movie.movieId,
+                                    tmdb: tmdb,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Center(
+                              child: Container(
+                                width: screenWidth / 8,
+                                height: screenWidth / 8,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    screenWidth / 8,
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.play_circle_filled_outlined,
+                                  size: screenWidth / 8,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -135,6 +210,8 @@ class _MovieScreenState extends State<MovieScreen> {
                 SizedBox(
                   height: 10,
                 ),
+
+                /// Movie Title
                 FittedBox(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -150,18 +227,22 @@ class _MovieScreenState extends State<MovieScreen> {
                 SizedBox(
                   height: 6,
                 ),
+
+                /// Release Date, Genre and Duration
                 FutureBuilder<int>(
                     future: getDuration(movie.movieId!),
                     builder: (context, AsyncSnapshot<int> snapshot) {
                       if (snapshot.hasData) {
-                        return underTitleText(movie, tmdb, snapshot.data!);
+                        return underTitleText(movie, snapshot.data!);
                       } else {
-                        return underTitleText(movie, tmdb, 0);
+                        return underTitleText(movie, 0);
                       }
                     }),
                 SizedBox(
                   height: 7,
                 ),
+
+                /// Movie Rating Bar
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,7 +268,7 @@ class _MovieScreenState extends State<MovieScreen> {
                     Text(
                       '${widget.movie!.movieRate!.toStringAsFixed(1)}',
                       style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.width / 20,
+                        fontSize: screenWidth / 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -196,28 +277,35 @@ class _MovieScreenState extends State<MovieScreen> {
                 SizedBox(
                   height: 18,
                 ),
+
+                /// Plot Summary Section
+                /// TODO: Use ReadMore here
                 DetailsSection(
                   title: 'Plot Summary',
+                  titleSize: screenWidth / 15,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: Text(
                       '${movie.movieDescription}',
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: screenWidth / 20,
                         color: Colors.black54,
                       ),
                     ),
                   ),
                   verticalPadding: 15,
                 ),
+
+                /// Cast Section
                 DetailsSection(
                   title: 'Cast',
+                  titleSize: screenWidth / 15,
                   child: FutureBuilder<List<Actor>>(
-                    future: tmdb.getCast(movie.movieId!),
-                    builder: (context, AsyncSnapshot<List> snapshot) {
+                    future: tmdb.getActorsCast(movie.movieId!),
+                    builder: (context, AsyncSnapshot<List<Actor>> snapshot) {
                       if (snapshot.hasData) {
-                        return castMovieListView(context, snapshot.data!, tmdb);
+                        return castMovieListView(context, snapshot.data!);
                       } else {
                         return SpinKitThreeBounce(
                             color: kMaterialBlueColor, size: 40);
@@ -226,14 +314,16 @@ class _MovieScreenState extends State<MovieScreen> {
                   ),
                   verticalPadding: 15,
                 ),
+
+                /// Similar Movies Section
                 DetailsSection(
                   title: 'Similar Movies',
+                  titleSize: screenWidth / 15,
                   child: FutureBuilder<List<Movie>>(
-                    future: tmdb.getSimilar(movie.movieId!),
+                    future: tmdb.getMoviesSimilar(movie.movieId!),
                     builder: (context, AsyncSnapshot<List<Movie>> snapshot) {
                       if (snapshot.hasData) {
-                        return movieHorizontalListView(
-                            context, snapshot.data!, tmdb);
+                        return movieHorizontalListView(context, snapshot.data!);
                       } else {
                         return SpinKitThreeBounce(
                             color: kMaterialBlueColor, size: 40);
@@ -251,9 +341,9 @@ class _MovieScreenState extends State<MovieScreen> {
   }
 }
 
-Widget underTitleText(Movie movie, TMDB tmdb, int duration) {
+Widget underTitleText(Movie movie, int duration) {
   return Text(
-    '${movie.movieRelease!.split('-')[0]} • ${movie.movieCategory} • ${tmdb.toGoodTime(duration)}',
+    '${movie.movieRelease!.split('-')[0]} • ${movie.movieCategory} • ${TMDB.toGoodTime(duration)}',
     style: TextStyle(
       fontSize: 15,
       letterSpacing: 1,
@@ -288,23 +378,21 @@ Widget cachedPosterPlaceholder({bool error = false}) {
   );
 }
 
-Widget cachedBackgroundRealImage(ImageProvider imageProvider) {
+Widget cachedBackgroundRealImage(screenHeight, ImageProvider imageProvider) {
   return Container(
-    height: 250,
+    height: screenHeight / 3,
     decoration: BoxDecoration(
       image: DecorationImage(
         image: imageProvider,
         fit: BoxFit.cover,
-        colorFilter:
-            ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
       ),
     ),
   );
 }
 
-Widget cachedBackgroundPlaceholder({bool error = false}) {
+Widget cachedBackgroundPlaceholder(screenHeight, {bool error = false}) {
   return Container(
-    height: 250,
+    height: screenHeight / 3,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(kCircularBorderRadius),
       image: DecorationImage(

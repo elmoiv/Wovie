@@ -6,14 +6,14 @@ import 'package:wovie/constants.dart';
 import 'package:wovie/models/actor.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/widgets/details_section.dart';
+import 'package:wovie/widgets/stack_icon_button.dart';
 import '../utils/readmore.dart';
 import 'package:wovie/widgets/msg_box.dart';
 import 'package:wovie/widgets/movie_list_horizontal.dart';
 
 class ActorScreen extends StatefulWidget {
   final Actor? actor;
-  final TMDB? tmdb;
-  ActorScreen({this.actor, this.tmdb});
+  ActorScreen({this.actor});
 
   @override
   _ActorScreenState createState() => _ActorScreenState();
@@ -23,7 +23,7 @@ class _ActorScreenState extends State<ActorScreen> {
   @override
   Widget build(BuildContext context) {
     Actor actor = widget.actor!;
-    TMDB tmdb = widget.tmdb!;
+    TMDB tmdb = TMDB();
 
     Future<Actor> getActor() async {
       try {
@@ -42,7 +42,7 @@ class _ActorScreenState extends State<ActorScreen> {
             future: getActor(),
             builder: (context, AsyncSnapshot<Actor> snapshot) {
               if (snapshot.hasData && snapshot.data!.actorId != null) {
-                return actorPage(context, snapshot.data!, tmdb);
+                return actorPage(context, snapshot.data!);
               } else {
                 return Container(
                   height: MediaQuery.of(context).size.height,
@@ -60,12 +60,15 @@ class _ActorScreenState extends State<ActorScreen> {
   }
 }
 
-Widget actorPage(context, Actor actor, TMDB tmdb) {
+Widget actorPage(context, Actor actor) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  TMDB tmdb = TMDB();
   return Container(
     child: Column(
       children: [
         Stack(
           children: [
+            /// Actor Picture
             Center(
               child: OptimizedCacheImage(
                 fadeInDuration: Duration(milliseconds: 300),
@@ -78,15 +81,47 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
                     cachedActorRealImage(context, imageProvider),
               ),
             ),
+
+            /// Gradient over for the name
             gradientUnderImage(context),
+
+            /// Actor Name
             nameOnRealImage(context, actor),
+
+            /// Shadow behind icon
+            Container(
+              width: double.infinity,
+              height: 100,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [
+                    Colors.black.withOpacity(0.6),
+                    Colors.black.withOpacity(0.0)
+                  ],
+                  stops: [0.0, 0.8],
+                ),
+              ),
+            ),
+
+            /// Back Arrow Stack Icon Button
+            StackIconButton(
+              icon: Icons.arrow_back,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ],
         ),
         SizedBox(
           height: 20,
         ),
+
+        /// Birth Info
         DetailsSection(
           title: 'Birth Info',
+          titleSize: screenWidth / 15,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: birthDetails(context,
@@ -95,8 +130,11 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
           ),
           verticalPadding: 15,
         ),
+
+        /// Actor Bio
         DetailsSection(
           title: 'Biography',
+          titleSize: screenWidth / 15,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: ReadMoreText(
@@ -106,16 +144,16 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
               trimCollapsedText: 'Show more',
               trimExpandedText: 'Show less',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: screenWidth / 20,
                 color: Colors.black54,
               ),
               lessStyle: TextStyle(
-                fontSize: 18,
+                fontSize: screenWidth / 20,
                 color: kMaterialBlueColor,
                 fontWeight: FontWeight.bold,
               ),
               moreStyle: TextStyle(
-                fontSize: 18,
+                fontSize: screenWidth / 20,
                 color: kMaterialBlueColor,
                 fontWeight: FontWeight.bold,
               ),
@@ -123,13 +161,16 @@ Widget actorPage(context, Actor actor, TMDB tmdb) {
           ),
           verticalPadding: 15,
         ),
+
+        /// Actor Movies
         DetailsSection(
           title: 'Known For',
+          titleSize: screenWidth / 15,
           child: FutureBuilder<List<Movie>>(
             future: tmdb.getActorMovies(actor.actorId!),
             builder: (context, AsyncSnapshot<List<Movie>> snapshot) {
               if (snapshot.hasData) {
-                return movieHorizontalListView(context, snapshot.data!, tmdb);
+                return movieHorizontalListView(context, snapshot.data!);
               } else {
                 return SpinKitThreeBounce(color: kMaterialBlueColor, size: 40);
               }
@@ -153,12 +194,13 @@ Widget birthDetails(context,
             width: width / 3.2,
             child: Text(
               'Birth Day:',
-              style: kGrayInfoTextStyle.copyWith(fontWeight: FontWeight.bold),
+              style: kGrayInfoTextStyle.copyWith(
+                  fontWeight: FontWeight.bold, fontSize: width / 20),
             ),
           ),
           Text(
             dateOfBirth,
-            style: kGrayInfoTextStyle,
+            style: kGrayInfoTextStyle.copyWith(fontSize: width / 20),
           )
         ],
       ),
@@ -170,13 +212,14 @@ Widget birthDetails(context,
             width: width / 3.2,
             child: Text(
               'Place of birth:',
-              style: kGrayInfoTextStyle.copyWith(fontWeight: FontWeight.bold),
+              style: kGrayInfoTextStyle.copyWith(
+                  fontWeight: FontWeight.bold, fontSize: width / 20),
             ),
           ),
           Flexible(
             child: Text(
               placeOfBirth,
-              style: kGrayInfoTextStyle,
+              style: kGrayInfoTextStyle.copyWith(fontSize: width / 20),
             ),
           )
         ],
@@ -212,6 +255,7 @@ Widget cachedActorRealImage(context, imageProvider) {
 
 Widget nameOnRealImage(context, Actor actor) {
   double height = MediaQuery.of(context).size.height;
+  double width = MediaQuery.of(context).size.width;
   return Container(
     height: height * (5 / 9),
     width: double.infinity,
@@ -229,7 +273,7 @@ Widget nameOnRealImage(context, Actor actor) {
               softWrap: false,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: height / 25,
+                fontSize: width / 12,
                 fontWeight: FontWeight.bold,
               ),
             ),

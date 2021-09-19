@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/screens/login_screen.dart';
 import 'package:wovie/screens/main_screen.dart';
@@ -37,9 +38,12 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
+    /// First Time init only for TMDB will save the api key
+    TMDB(apiKey: API_KEY);
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => MainScreen(apiKey: API_KEY),
+        builder: (context) => MainScreen(),
       ),
     );
   }

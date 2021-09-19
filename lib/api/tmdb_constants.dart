@@ -6,6 +6,10 @@ const String upcomingUrl = movieUrl + 'upcoming/';
 const String actorUrl = apiUrl + 'person/';
 const String searchUrl = apiUrl + 'search/movie';
 const String imageUrl = 'https://image.tmdb.org/t/p/w500';
+const String imagePosterUrl =
+    'https://www.themoviedb.org/t/p/w220_and_h330_face';
+const String imageActorUrl =
+    'https://www.themoviedb.org/t/p/w300_and_h450_bestv2';
 const Map<int, String> genreIntStr = {
   28: 'Action',
   12: 'Adventure',
