@@ -8,7 +8,8 @@ import 'package:wovie/utils/easy_navigator.dart';
 
 class MovieTile extends StatefulWidget {
   final Movie? movie;
-  MovieTile({this.movie});
+  final String? customHeroTag;
+  MovieTile({this.movie, this.customHeroTag = 'custom'});
 
   @override
   _MovieTileState createState() => _MovieTileState();
@@ -19,7 +20,6 @@ class _MovieTileState extends State<MovieTile> {
   Widget build(BuildContext context) {
     Movie movie = widget.movie!;
 
-    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
       child: RawMaterialButton(
         onPressed: () {
@@ -27,7 +27,7 @@ class _MovieTileState extends State<MovieTile> {
             context,
             MovieScreen(
               movie: movie,
-              heroKey: '${movie.movieId}-Tile',
+              heroKey: '${movie.movieId}-tile-${widget.customHeroTag}',
             ),
           );
         },
@@ -40,7 +40,7 @@ class _MovieTileState extends State<MovieTile> {
             borderRadius: BorderRadius.circular(kCircularBorderRadius),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
+                color: Theme.of(context).shadowColor.withOpacity(0.2),
                 spreadRadius: 1.1,
                 blurRadius: 2.5,
                 offset: Offset(0, 0), // changes position of shadow
@@ -58,7 +58,7 @@ class _MovieTileState extends State<MovieTile> {
                       Expanded(
                         flex: 7,
                         child: Hero(
-                          tag: '${movie.movieId}-Tile',
+                          tag: '${movie.movieId}-tile-${widget.customHeroTag}',
                           child: OptimizedCacheImage(
                             fit: BoxFit.cover,
                             fadeInDuration: Duration(milliseconds: 300),
@@ -76,7 +76,7 @@ class _MovieTileState extends State<MovieTile> {
                         flex: 2,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.only(
                               bottomLeft:
                                   Radius.circular(kCircularBorderRadius),
@@ -139,10 +139,12 @@ class _MovieTileState extends State<MovieTile> {
                                       movie.movieTitle!,
                                       overflow: TextOverflow.fade,
                                       softWrap: false,
-                                      style: TextStyle(
-                                        fontSize: constraints.maxWidth / 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline4!
+                                          .copyWith(
+                                            fontSize: constraints.maxWidth / 10,
+                                          ),
                                     ),
                                   ),
                                 ),
@@ -160,9 +162,16 @@ class _MovieTileState extends State<MovieTile> {
                                       tmdbDate(movie.movieRelease),
                                       overflow: TextOverflow.fade,
                                       softWrap: false,
-                                      style: TextStyle(
-                                          fontSize: constraints.maxWidth / 10,
-                                          color: Color(0x77000000)),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline4!
+                                          .copyWith(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: constraints.maxWidth / 10,
+                                            color: Theme.of(context)
+                                                .shadowColor
+                                                .withOpacity(.5),
+                                          ),
                                     ),
                                   ),
                                 ),
@@ -291,6 +300,10 @@ Widget cachedRealImage(ImageProvider imageProvider) {
 Widget cachedPlaceholder() {
   return Container(
     decoration: BoxDecoration(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(kCircularBorderRadius),
+        topRight: Radius.circular(kCircularBorderRadius),
+      ),
       image: DecorationImage(
         image: AssetImage('images/placeholder.png'),
         fit: BoxFit.cover,

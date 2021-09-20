@@ -105,9 +105,11 @@ class _UpcomingMovieTileState extends State<UpcomingMovieTile> {
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
-                                      fontSize: screenWidth / 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: screenWidth / 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'SourceSansPro',
+                                  ),
                                 ),
                               ),
                             ),
@@ -127,14 +129,14 @@ class _UpcomingMovieTileState extends State<UpcomingMovieTile> {
                     maxWidth: screenWidth / 5,
                   ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(screenWidth / 5)),
+                    borderRadius: BorderRadius.circular(screenWidth / 5),
+                  ),
                   onPressed: () {
                     Navigator.push(
                       context,
                       TransparentRoute(
                         builder: (context) => YoutubeScreen(
                           movieId: movie.movieId,
-                          tmdb: tmdb,
                         ),
                       ),
                     );
@@ -181,6 +183,7 @@ Widget cachedRealImage(ImageProvider imageProvider) {
 Widget cachedPlaceholder() {
   return Container(
     decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(kCircularBorderRadius + 5),
       image: DecorationImage(
         image: AssetImage('images/placeholder.png'),
         fit: BoxFit.cover,

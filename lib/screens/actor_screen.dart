@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/route_manager.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/constants.dart';
 import 'package:wovie/models/actor.dart';
 import 'package:wovie/models/movie.dart';
+import 'package:wovie/screens/main_screen.dart';
 import 'package:wovie/widgets/details_section.dart';
+import 'package:wovie/widgets/overscroll_color.dart';
 import 'package:wovie/widgets/stack_icon_button.dart';
 import '../utils/readmore.dart';
 import 'package:wovie/widgets/msg_box.dart';
@@ -36,23 +39,26 @@ class _ActorScreenState extends State<ActorScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: ScrollPhysics(),
-          child: FutureBuilder<Actor>(
-            future: getActor(),
-            builder: (context, AsyncSnapshot<Actor> snapshot) {
-              if (snapshot.hasData && snapshot.data!.actorId != null) {
-                return actorPage(context, snapshot.data!);
-              } else {
-                return Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: Center(
-                    child:
-                        SpinKitFadingFour(color: kMaterialBlueColor, size: 60),
-                  ),
-                );
-              }
-            },
+        child: OverScrollColor(
+          direction: AxisDirection.down,
+          child: SingleChildScrollView(
+            physics: ClampingScrollPhysics(),
+            child: FutureBuilder<Actor>(
+              future: getActor(),
+              builder: (context, AsyncSnapshot<Actor> snapshot) {
+                if (snapshot.hasData && snapshot.data!.actorId != null) {
+                  return actorPage(context, snapshot.data!);
+                } else {
+                  return Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Center(
+                      child: SpinKitFadingFour(
+                          color: Theme.of(context).accentColor, size: 60),
+                    ),
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -91,7 +97,7 @@ Widget actorPage(context, Actor actor) {
             /// Shadow behind icon
             Container(
               width: double.infinity,
-              height: 100,
+              height: screenWidth / 3.6,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -106,11 +112,22 @@ Widget actorPage(context, Actor actor) {
             ),
 
             /// Back Arrow Stack Icon Button
-            StackIconButton(
-              icon: Icons.arrow_back,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                StackIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                StackIconButton(
+                  icon: Icons.home_outlined,
+                  onPressed: () {
+                    Get.offAll(() => MainScreen());
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -145,18 +162,14 @@ Widget actorPage(context, Actor actor) {
               trimExpandedText: 'Show less',
               style: TextStyle(
                 fontSize: screenWidth / 20,
-                color: Colors.black54,
+                color: Theme.of(context).shadowColor.withOpacity(0.5),
               ),
-              lessStyle: TextStyle(
-                fontSize: screenWidth / 20,
-                color: kMaterialBlueColor,
-                fontWeight: FontWeight.bold,
-              ),
-              moreStyle: TextStyle(
-                fontSize: screenWidth / 20,
-                color: kMaterialBlueColor,
-                fontWeight: FontWeight.bold,
-              ),
+              lessStyle: Theme.of(context).textTheme.headline3!.copyWith(
+                    fontSize: screenWidth / 20,
+                  ),
+              moreStyle: Theme.of(context).textTheme.headline3!.copyWith(
+                    fontSize: screenWidth / 20,
+                  ),
             ),
           ),
           verticalPadding: 15,
@@ -172,7 +185,8 @@ Widget actorPage(context, Actor actor) {
               if (snapshot.hasData) {
                 return movieHorizontalListView(context, snapshot.data!);
               } else {
-                return SpinKitThreeBounce(color: kMaterialBlueColor, size: 40);
+                return SpinKitThreeBounce(
+                    color: Theme.of(context).accentColor, size: 40);
               }
             },
           ),
@@ -186,6 +200,7 @@ Widget actorPage(context, Actor actor) {
 Widget birthDetails(context,
     {String dateOfBirth = '', String placeOfBirth = ''}) {
   double width = MediaQuery.of(context).size.width;
+  TextStyle infoTextStyle = Theme.of(context).textTheme.headline2!;
   return Column(
     children: [
       Row(
@@ -194,13 +209,19 @@ Widget birthDetails(context,
             width: width / 3.2,
             child: Text(
               'Birth Day:',
-              style: kGrayInfoTextStyle.copyWith(
-                  fontWeight: FontWeight.bold, fontSize: width / 20),
+              style: infoTextStyle.copyWith(
+                fontSize: width / 20,
+                color: Theme.of(context).shadowColor.withOpacity(0.5),
+              ),
             ),
           ),
           Text(
             dateOfBirth,
-            style: kGrayInfoTextStyle.copyWith(fontSize: width / 20),
+            style: infoTextStyle.copyWith(
+              fontSize: width / 20,
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).shadowColor.withOpacity(0.5),
+            ),
           )
         ],
       ),
@@ -212,14 +233,20 @@ Widget birthDetails(context,
             width: width / 3.2,
             child: Text(
               'Place of birth:',
-              style: kGrayInfoTextStyle.copyWith(
-                  fontWeight: FontWeight.bold, fontSize: width / 20),
+              style: infoTextStyle.copyWith(
+                fontSize: width / 20,
+                color: Theme.of(context).shadowColor.withOpacity(0.5),
+              ),
             ),
           ),
           Flexible(
             child: Text(
               placeOfBirth,
-              style: kGrayInfoTextStyle.copyWith(fontSize: width / 20),
+              style: infoTextStyle.copyWith(
+                fontSize: width / 20,
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).shadowColor.withOpacity(0.5),
+              ),
             ),
           )
         ],
@@ -244,9 +271,9 @@ Widget cachedActorRealImage(context, imageProvider) {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
+            color: Colors.grey.withOpacity(0.5),
             spreadRadius: 3.1,
-            blurRadius: 7.5,
+            blurRadius: 30.5,
             offset: Offset(0, 10), // changes position of shadow
           )
         ]),

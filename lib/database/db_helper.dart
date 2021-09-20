@@ -33,7 +33,7 @@ class DbHelper {
         'create table $tableName (${Constants.COL_ID} integer primary key,' +
             ' ${Constants.COL_TITLE} text, ${Constants.COL_DESCRIPTION} text,' +
             ' ${Constants.COL_RELEASE} text, ${Constants.COL_RATE} float,' +
-            ' ${Constants.COL_CATEGORY} text, ${Constants.COL_DURATION} text,' +
+            ' ${Constants.COL_CATEGORY} text, ${Constants.COL_DURATION} integer,' +
             ' ${Constants.COL_POSTER} text, ${Constants.COL_BACKGROUND} text)';
     db.execute(query);
   }
@@ -52,6 +52,7 @@ class DbHelper {
   }
 
   Future<int> addMovie(Movie movie, String type) async {
+    print('Added: ${movie.movieTitle}');
     String tableName = this._decideTableName(type);
     try {
       Database db = await getDbInstance();
@@ -62,7 +63,8 @@ class DbHelper {
     }
   }
 
-  Future<int> deleteMovie(Movie movie, String type) async {
+  Future<int> remMovie(Movie movie, String type) async {
+    print('Removed: ${movie.movieTitle}');
     String tableName = this._decideTableName(type);
     try {
       Database db = await getDbInstance();
@@ -73,13 +75,15 @@ class DbHelper {
     }
   }
 
-  Future<List<Movie>> getMovie(String movieTitle, String type) async {
+  Future<Movie> getMovie(int movieId, String type) async {
     String tableName = this._decideTableName(type);
     Database db = await getDbInstance();
     List<Map<String, dynamic>> query = await db.query(tableName,
-        where: "${Constants.COL_TITLE} LIKE '$movieTitle%'");
-    print(query);
-    return query.map((e) => Movie.fromMap(e)).toList();
+        where: "${Constants.COL_ID} LIKE '$movieId%'");
+    if (query.length == 0) {
+      return Movie();
+    }
+    return query.map((e) => Movie.fromMap(e)).toList().first;
   }
 
   Future<List<Movie>> getAllMovies(String type) async {

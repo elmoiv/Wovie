@@ -5,6 +5,7 @@ import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/screens/login_screen.dart';
 import 'package:wovie/screens/main_screen.dart';
+import '../controllers/sharedprefs_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -12,16 +13,13 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  SharedPreferences? prefs;
-
   void jumpToLoginOrMain() async {
     // Initializing Database
     DbHelper dbHelper = DbHelper();
     await dbHelper.getDbInstance();
 
     // Initializing SharedPrefs
-    prefs = await SharedPreferences.getInstance();
-    dynamic API_KEY = prefs!.getString('API_KEY');
+    dynamic API_KEY = SharedPrefs().prefs!.getString('API_KEY');
 
     Duration threeSeconds = Duration(seconds: 2);
     await Future.delayed(threeSeconds, () {});
@@ -30,9 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (API_KEY == null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => LoginScreen(
-            prefs: prefs,
-          ),
+          builder: (context) => LoginScreen(),
         ),
       );
       return;
@@ -60,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: SpinKitSquareCircle(
-          color: Color(0xff2196f3),
+          color: Theme.of(context).accentColor,
           size: 80.0,
         ),
       ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'bottom_pages/favourites_screen.dart';
+import 'package:wovie/screens/bottom_pages/favourite_or_watchlist_screen.dart';
 import 'bottom_pages/home_screen.dart';
-import 'bottom_pages/watchlist_screen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -26,24 +25,33 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) => _onItemTapped(index),
-        elevation: 10,
-        currentIndex: curIndex,
-        items: [
-          BottomNavigationBarItem(
-            label: 'Watchlist',
-            icon: Icon(Icons.bookmark),
-          ),
-          BottomNavigationBarItem(
-            label: 'Home',
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            label: 'Favourites',
-            icon: Icon(Icons.favorite),
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+                color: Theme.of(context).shadowColor,
+                blurRadius: 5.0,
+                offset: Offset(0.0, 0.75))
+          ],
+        ),
+        child: BottomNavigationBar(
+          onTap: (index) => _onItemTapped(index),
+          currentIndex: curIndex,
+          items: [
+            BottomNavigationBarItem(
+              label: 'Watchlist',
+              icon: Icon(Icons.bookmark),
+            ),
+            BottomNavigationBarItem(
+              label: 'Home',
+              icon: Icon(Icons.home),
+            ),
+            BottomNavigationBarItem(
+              label: 'Favourites',
+              icon: Icon(Icons.favorite),
+            ),
+          ],
+        ),
       ),
       body: PageView(
         controller: _pageController,
@@ -51,9 +59,17 @@ class _MainScreenState extends State<MainScreen> {
           setState(() => curIndex = index);
         },
         children: [
-          WatchlistScreen(),
+          FavOrWatchScreen(
+            screenType: 'watch',
+            screenTitle: 'Watchlist',
+            screenBackgroundIcon: Icons.bookmark,
+          ),
           HomeScreen(),
-          FavouritesScreen(),
+          FavOrWatchScreen(
+            screenType: 'fav',
+            screenTitle: 'Favourites',
+            screenBackgroundIcon: Icons.favorite,
+          ),
         ],
       ),
     );
@@ -63,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       curIndex = index;
       _pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.easeOut);
+          duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
     });
   }
 }

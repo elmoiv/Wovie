@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:wovie/models/actor.dart';
 
-Widget actorTile(Actor actor) {
+Widget actorTile(context, Actor actor) {
+  double screenWidth = MediaQuery.of(context).size.width;
   return Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     mainAxisAlignment: MainAxisAlignment.center,
@@ -17,11 +18,11 @@ Widget actorTile(Actor actor) {
             child: Padding(
               padding: const EdgeInsets.all(2.0),
               child: SizedBox(
-                width: 80,
-                height: 80,
+                width: screenWidth / 4.5,
+                height: screenWidth / 4.5,
                 child: Icon(
                   Icons.person,
-                  size: 40,
+                  size: screenWidth / 9,
                 ),
               ),
             ),
@@ -32,11 +33,11 @@ Widget actorTile(Actor actor) {
             child: Padding(
               padding: const EdgeInsets.all(2.0),
               child: SizedBox(
-                width: 80,
-                height: 80,
+                width: screenWidth / 4.5,
+                height: screenWidth / 4.5,
                 child: Icon(
                   Icons.error,
-                  size: 40,
+                  size: screenWidth / 9,
                 ),
               ),
             ),
@@ -46,20 +47,24 @@ Widget actorTile(Actor actor) {
           padding: const EdgeInsets.all(2.0),
           child: circularContainer(
             child: CircleAvatar(
-              radius: 40,
+              radius: screenWidth / 8.5,
               backgroundImage: imageProvider,
             ),
           ),
         ),
       ),
       SizedBox(
-        height: 5,
+        height: screenWidth / 45,
       ),
       Text(
         actor.actorName!,
         textAlign: TextAlign.center,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: screenWidth / 27,
+          color: Theme.of(context).shadowColor,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       actor.actorCharacter != '-'
           ? Text(
@@ -67,8 +72,8 @@ Widget actorTile(Actor actor) {
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 13,
-                color: Colors.black54,
+                fontSize: screenWidth / 27.7,
+                color: Theme.of(context).shadowColor.withOpacity(0.5),
               ),
             )
           : Container(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/widgets/movie_tile.dart';
+import 'package:wovie/widgets/overscroll_color.dart';
 
 Widget movieHorizontalListView(context, List<Movie> movieList,
     {double? height}) {
@@ -9,18 +10,21 @@ Widget movieHorizontalListView(context, List<Movie> movieList,
   double width = height * .5;
   return Container(
     height: height,
-    child: ListView.builder(
-      physics: ScrollPhysics(),
-      scrollDirection: Axis.horizontal,
-      itemCount: movieList.length,
-      itemBuilder: (context, index) {
-        return Container(
-          width: width,
-          child: MovieTile(
-            movie: movieList[index],
-          ),
-        );
-      },
+    child: OverScrollColor(
+      direction: AxisDirection.right,
+      child: ListView.builder(
+        physics: ClampingScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        itemCount: movieList.length,
+        itemBuilder: (context, index) {
+          return Container(
+            width: width,
+            child: MovieTile(
+              movie: movieList[index],
+            ),
+          );
+        },
+      ),
     ),
   );
 }

@@ -9,7 +9,7 @@ class DetailsSection extends StatelessWidget {
   /// final VoidCallback? var
   /// is the same as:
   /// final Function()? var
-  final VoidCallback? viewMoreOnPressed;
+  final Function()? viewMoreOnPressed;
 
   DetailsSection({
     this.title,
@@ -35,17 +35,16 @@ class DetailsSection extends StatelessWidget {
                 Text(
                   '| ',
                   textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: this.titleSize,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xfffb6a17),
-                  ),
+                  style: Theme.of(context).textTheme.headline1!.copyWith(
+                        fontSize: this.titleSize,
+                      ),
                 ),
                 Text(
                   this.title!,
                   textAlign: TextAlign.left,
-                  style: TextStyle(
-                      fontSize: this.titleSize, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headline2!.copyWith(
+                        fontSize: this.titleSize,
+                      ),
                 ),
               ],
             ),
@@ -54,10 +53,9 @@ class DetailsSection extends StatelessWidget {
                     onPressed: this.viewMoreOnPressed,
                     child: Text(
                       'View All',
-                      style: TextStyle(
-                        fontSize: this.titleSize! - 10,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headline3!.copyWith(
+                            fontSize: this.titleSize! - 10,
+                          ),
                     ),
                   )
                 : Container(),

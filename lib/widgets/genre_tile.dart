@@ -8,6 +8,7 @@ Widget genreTile(
   context,
   TMDB tmdb, {
   String? title,
+  String icon = '',
   Color? color,
   Function? movieFunc,
   bool invertTitleColor = false,
@@ -48,13 +49,32 @@ Widget genreTile(
                     ));
               },
               child: Center(
-                child: Text(
-                  title!,
-                  style: TextStyle(
-                    fontSize: screenWidth / 20,
-                    color: invertTitleColor ? Colors.black : Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${title}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: screenWidth / 20,
+                        color: invertTitleColor ? Colors.black : Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: icon != '' ? 10 : 0,
+                    ),
+                    icon != ''
+                        ? Text(
+                            '${icon}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: screenWidth / 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : SizedBox(),
+                  ],
                 ),
               ),
             ),

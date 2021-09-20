@@ -9,7 +9,7 @@ class TMDB {
   String searchQuery = '';
 
   /// Static API_KEY
-  final String? API_KEY;
+  String? API_KEY;
 
   /// Single Tone Design Pattern
   static TMDB? _helper;
