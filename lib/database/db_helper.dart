@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:wovie/models/movie.dart';
 import 'db_constants.dart';
@@ -30,7 +31,8 @@ class DbHelper {
 
   void _createTable(Database db, String tableName) {
     String query =
-        'create table $tableName (${Constants.COL_ID} integer primary key,' +
+        'create table $tableName (${Constants.COL_UNIQUE_ID} integer primary key ' +
+            'autoincrement, ${Constants.COL_ID} integer,' +
             ' ${Constants.COL_TITLE} text, ${Constants.COL_DESCRIPTION} text,' +
             ' ${Constants.COL_RELEASE} text, ${Constants.COL_RATE} float,' +
             ' ${Constants.COL_CATEGORY} text, ${Constants.COL_DURATION} integer,' +
@@ -55,8 +57,8 @@ class DbHelper {
   Future<int> addMovie(Movie movie, String type) async {
     print('Added: ${movie.movieTitle}');
     String tableName = this._decideTableName(type);
+    Database db = await getDbInstance();
     try {
-      Database db = await getDbInstance();
       db.insert(tableName, movie.toMap());
       return 0;
     } catch (e) {
@@ -64,11 +66,30 @@ class DbHelper {
     }
   }
 
+  Future<int> addAllMovies(List<Movie> movies, String type) async {
+    print('Added All: $type');
+    Database db = await this.getDbInstance();
+    try {
+      String tableName = this._decideTableName(type);
+      db.transaction((txn) async {
+        Batch batch = txn.batch();
+        for (Movie movie in movies) {
+          batch.insert(tableName, movie.toMap());
+        }
+        batch.commit();
+      });
+      return 0;
+    } catch (e) {
+      print(e);
+      return 1;
+    }
+  }
+
   Future<int> remMovie(Movie movie, String type) async {
     print('Removed: ${movie.movieTitle}');
     String tableName = this._decideTableName(type);
+    Database db = await getDbInstance();
     try {
-      Database db = await getDbInstance();
       db.delete(tableName, where: '${Constants.COL_ID}=${movie.movieId}');
       return 0;
     } catch (e) {
@@ -76,11 +97,11 @@ class DbHelper {
     }
   }
 
-  Future<int> remAllMovie(String type) async {
+  Future<int> remAllMovies(String type) async {
     print('Removed all: $type');
     String tableName = this._decideTableName(type);
+    Database db = await getDbInstance();
     try {
-      Database db = await getDbInstance();
       db.delete(tableName);
       return 0;
     } catch (e) {

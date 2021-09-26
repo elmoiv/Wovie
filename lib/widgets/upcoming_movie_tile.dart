@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
-import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/constants.dart';
 import 'package:wovie/screens/movie_screen.dart';
@@ -20,7 +19,7 @@ class _UpcomingMovieTileState extends State<UpcomingMovieTile> {
   @override
   Widget build(BuildContext context) {
     Movie movie = widget.movie!;
-    TMDB tmdb = TMDB();
+
     double screenWidth = MediaQuery.of(context).size.width;
     return RawMaterialButton(
       onPressed: () {
@@ -41,6 +40,14 @@ class _UpcomingMovieTileState extends State<UpcomingMovieTile> {
           margin: EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(kCircularBorderRadius + 5),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).shadowColor.withOpacity(0.2),
+                spreadRadius: 1.1,
+                blurRadius: 2.5,
+                offset: Offset(0, 0), // changes position of shadow
+              )
+            ],
           ),
           child: Stack(
             children: [

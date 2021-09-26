@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -5,11 +6,12 @@ import 'package:wovie/models/movie.dart';
 import 'package:wovie/constants.dart';
 import 'package:wovie/screens/movie_screen.dart';
 import 'package:wovie/utils/easy_navigator.dart';
+import 'package:uuid/uuid.dart';
 
 class MovieTile extends StatefulWidget {
   final Movie? movie;
-  final String? customHeroTag;
-  MovieTile({this.movie, this.customHeroTag = 'custom'});
+  final bool? blurNsfw;
+  MovieTile({this.movie, this.blurNsfw = false});
 
   @override
   _MovieTileState createState() => _MovieTileState();
@@ -20,6 +22,8 @@ class _MovieTileState extends State<MovieTile> {
   Widget build(BuildContext context) {
     Movie movie = widget.movie!;
 
+    String uuid = Uuid().v4();
+
     return Container(
       child: RawMaterialButton(
         onPressed: () {
@@ -27,13 +31,15 @@ class _MovieTileState extends State<MovieTile> {
             context,
             MovieScreen(
               movie: movie,
-              heroKey: '${movie.movieId}-tile-${widget.customHeroTag}',
+              heroKey: '$uuid',
             ),
           );
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kCircularBorderRadius),
         ),
+
+        /// Shadow behind tile
         child: Container(
           margin: EdgeInsets.all(4.0),
           decoration: BoxDecoration(
@@ -58,7 +64,7 @@ class _MovieTileState extends State<MovieTile> {
                       Expanded(
                         flex: 7,
                         child: Hero(
-                          tag: '${movie.movieId}-tile-${widget.customHeroTag}',
+                          tag: '$uuid',
                           child: OptimizedCacheImage(
                             fit: BoxFit.cover,
                             fadeInDuration: Duration(milliseconds: 300),

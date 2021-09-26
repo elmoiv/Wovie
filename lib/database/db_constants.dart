@@ -6,6 +6,7 @@ class Constants {
   static final String TABLE_FAVOURITE = 'favourites';
 
   /// Columns
+  static final String COL_UNIQUE_ID = 'uniqueId';
   static final String COL_ID = 'movieId';
   static final String COL_TITLE = 'movieTitle';
   static final String COL_DESCRIPTION = 'movieDescription';

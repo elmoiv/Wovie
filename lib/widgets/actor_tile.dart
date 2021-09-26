@@ -22,6 +22,7 @@ Widget actorTile(context, Actor actor) {
                 height: screenWidth / 4.5,
                 child: Icon(
                   Icons.person,
+                  color: Colors.black,
                   size: screenWidth / 9,
                 ),
               ),

@@ -6,6 +6,7 @@ class MsgBox extends StatelessWidget {
   final String? content;
   final String? successText;
   final String? failureText;
+  final bool? hideFailureButton;
   final Function()? onPressedSuccess;
   final Function()? onPressedFailure;
 
@@ -16,6 +17,7 @@ class MsgBox extends StatelessWidget {
     this.onPressedFailure,
     this.failureText = 'Cancel',
     this.successText = 'Ok',
+    this.hideFailureButton = false,
   });
 
   @override
@@ -30,6 +32,7 @@ class MsgBox extends StatelessWidget {
           Navigator.pop(context);
         };
     return AlertDialog(
+      elevation: 5,
       title: Text(
         this.title!,
         style: Theme.of(context).dialogTheme.titleTextStyle!.copyWith(
@@ -43,13 +46,15 @@ class MsgBox extends StatelessWidget {
             ),
       ),
       actions: [
-        TextButton(
-          onPressed: _onPressedFailure,
-          child: Text(
-            this.failureText!,
-            style: TextStyle(color: Theme.of(context).accentColor),
-          ),
-        ),
+        this.hideFailureButton!
+            ? Container()
+            : TextButton(
+                onPressed: _onPressedFailure,
+                child: Text(
+                  this.failureText!,
+                  style: TextStyle(color: Theme.of(context).accentColor),
+                ),
+              ),
         TextButton(
           onPressed: _onPressedSuccess,
           child: Text(

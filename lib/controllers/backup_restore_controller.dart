@@ -3,6 +3,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 
+enum RETURN_CODE {
+  SUCCESS,
+  EXIT,
+  NO_ACCESS,
+  DAMAGED,
+  NOT_FOUND,
+}
+
 class BackupController {
   List<Movie>? favMovies;
   List<Movie>? watMovies;
@@ -17,7 +25,7 @@ class BackupController {
         'wat': this.watMovies!.map((e) => e.toMap()).toList(),
       };
 
-  Map<String, List<Movie>> convertToMovies() => {
+  void convertToMovies() => this.json = {
         'fav': List<Movie>.from(
             this.json['fav'].map((e) => Movie.fromMap(e)).toList()),
         'wat': List<Movie>.from(
@@ -25,6 +33,7 @@ class BackupController {
       };
 
   Future<dynamic> backupSettings([bool useFilePicker = false]) async {
+    this.convertToJson();
     // /// Pick Directory
     // String? woviePath = await FilePicker.platform.getDirectoryPath();
     // if (woviePath == null) {
@@ -42,10 +51,10 @@ class BackupController {
     try {
       await File('$woviePath/wovie_settings.json')
           .writeAsString(jsonEncode(this.json));
-      return 1;
+      return RETURN_CODE.SUCCESS;
     } catch (e) {
       print(e.toString());
-      return 2;
+      return RETURN_CODE.NO_ACCESS;
     }
   }
 
@@ -60,12 +69,12 @@ class BackupController {
         allowedExtensions: ['json'],
       );
       if (result == null) {
-        return 1;
+        return RETURN_CODE.EXIT;
       }
     } catch (e) {
       /// Can't get access rights
       print(e.toString());
-      return 2;
+      return RETURN_CODE.NO_ACCESS;
     }
 
     /// Read text and convert to json
@@ -73,10 +82,12 @@ class BackupController {
       File file = File(result.files.single.path!);
       String settingsRaw = await file.readAsString();
       this.json = jsonDecode(settingsRaw);
-      return 3;
+      this.convertToMovies();
+      return RETURN_CODE.SUCCESS;
     } catch (e) {
-      /// Damaged
+      /// Damaged file
       print(e.toString());
+      return RETURN_CODE.DAMAGED;
     }
   }
 }
