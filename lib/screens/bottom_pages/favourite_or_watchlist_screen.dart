@@ -6,6 +6,7 @@ import 'package:wovie/controllers/database_realtime_controller.dart';
 import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/widgets/movie_grid_view.dart';
+import 'package:wovie/widgets/msg_box.dart';
 
 class FavOrWatchScreen extends StatefulWidget {
   final String? screenType;
@@ -31,6 +32,14 @@ class _FavOrWatchScreenState extends State<FavOrWatchScreen> {
     return true;
   }
 
+  Future<bool> removeAllSqlMovies() async {
+    await DbHelper().remAllMovies(widget.screenType!);
+    movieListController.updateMovieList([], widget.screenType!);
+    movieListController.clearCounter('fav');
+    movieListController.clearCounter('wat');
+    return true;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -40,62 +49,93 @@ class _FavOrWatchScreenState extends State<FavOrWatchScreen> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
+
+    /// Clear badges counters
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          '${widget.screenTitle}',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).shadowColor,
+      extendBody: true,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: height / 10),
+        child: FloatingActionButton(
+          heroTag: null,
+          elevation: 1,
+          child: Icon(
+            Icons.delete_forever,
+            size: 30,
+            color: Colors.white,
           ),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return MsgBox(
+                  title: 'Remove all',
+                  content:
+                      'You are about to remove all your ${widget.screenTitle!.toLowerCase()} movies!' +
+                          '\n\nPress Yes to proceed.',
+                  successText: 'Yes',
+                  failureText: 'No',
+                  onPressedSuccess: () {
+                    removeAllSqlMovies();
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: FutureBuilder<bool>(
-            future: fetchSqlMovies(),
-            builder: (context, AsyncSnapshot<bool> snapshot) {
-              if (snapshot.hasData) {
-                return Obx(() {
-                  String type = widget.screenType!;
-                  return movieListController.getMovieList(type).length > 0
-                      ? movieGridView(
-                          context,
-                          List<Movie>.from(
-                              movieListController.getMovieList(type)),
-                          customHeroTag: widget.screenType!)
-                      : Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                widget.screenBackgroundIcon,
-                                size: height / 5,
-                                color: Colors.grey.withOpacity(.6),
+      body: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: FutureBuilder<bool>(
+          future: fetchSqlMovies(),
+          builder: (context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              return Obx(() {
+                String type = widget.screenType!;
+                return movieListController.getMovieList(type).length > 0
+                    ? movieGridView(
+                        context,
+                        List<Movie>.from(
+                          movieListController
+                              .getMovieList(type)
+                              .reversed
+                              .toList(),
+                        ),
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              widget.screenBackgroundIcon,
+                              size: height / 5,
+                              color:
+                                  Theme.of(context).shadowColor.withOpacity(.3),
+                            ),
+                            SizedBox(
+                              height: height / 15,
+                            ),
+                            Text(
+                              'Nothing added in ${widget.screenTitle}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: height / 20,
+                                color: Theme.of(context)
+                                    .shadowColor
+                                    .withOpacity(.3),
                               ),
-                              SizedBox(
-                                height: height / 15,
-                              ),
-                              Text(
-                                'Nothing added in ${widget.screenTitle} :(',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: height / 20,
-                                  color: Colors.grey.withOpacity(.6),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                });
-              } else {
-                return SpinKitFadingFour(
-                    color: Theme.of(context).accentColor, size: 60);
-              }
-            },
-          ),
+                            )
+                          ],
+                        ),
+                      );
+              });
+            } else {
+              return SpinKitFadingFour(
+                color: Theme.of(context).accentColor,
+                size: 60,
+              );
+            }
+          },
         ),
       ),
     );

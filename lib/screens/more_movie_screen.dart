@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:wovie/api/tmdb_helper.dart';
-import 'package:wovie/constants.dart';
 import 'package:wovie/models/movie.dart';
 import '../widgets/movie_grid_view.dart';
 import 'package:wovie/widgets/msg_box.dart';
@@ -44,7 +43,6 @@ class _MoreMoviesScreenState extends State<MoreMoviesScreen> {
   Widget build(BuildContext context) {
     bool movieWord = widget.addMoviesWordAtTheEnd!;
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
 
     /// Run getMovies one time only
     /// Moved from initState due to widget rebuild inheritance issues

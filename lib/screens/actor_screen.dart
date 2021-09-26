@@ -8,7 +8,6 @@ import 'package:wovie/models/actor.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/screens/main_screen.dart';
 import 'package:wovie/widgets/details_section.dart';
-import 'package:wovie/widgets/overscroll_color.dart';
 import 'package:wovie/widgets/stack_icon_button.dart';
 import '../utils/readmore.dart';
 import 'package:wovie/widgets/msg_box.dart';
@@ -39,26 +38,23 @@ class _ActorScreenState extends State<ActorScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: OverScrollColor(
-          direction: AxisDirection.down,
-          child: SingleChildScrollView(
-            physics: ClampingScrollPhysics(),
-            child: FutureBuilder<Actor>(
-              future: getActor(),
-              builder: (context, AsyncSnapshot<Actor> snapshot) {
-                if (snapshot.hasData && snapshot.data!.actorId != null) {
-                  return actorPage(context, snapshot.data!);
-                } else {
-                  return Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: Center(
-                      child: SpinKitFadingFour(
-                          color: Theme.of(context).accentColor, size: 60),
-                    ),
-                  );
-                }
-              },
-            ),
+        child: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
+          child: FutureBuilder<Actor>(
+            future: getActor(),
+            builder: (context, AsyncSnapshot<Actor> snapshot) {
+              if (snapshot.hasData && snapshot.data!.actorId != null) {
+                return actorPage(context, snapshot.data!);
+              } else {
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: SpinKitFadingFour(
+                        color: Theme.of(context).accentColor, size: 60),
+                  ),
+                );
+              }
+            },
           ),
         ),
       ),

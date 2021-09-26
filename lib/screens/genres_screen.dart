@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/widgets/genre_tile.dart';
-import 'package:wovie/widgets/overscroll_color.dart';
 
 class GenresScreen extends StatefulWidget {
   @override
@@ -27,28 +26,24 @@ class _GenresScreenState extends State<GenresScreen> {
           color: Theme.of(context).accentColor,
         ),
       ),
-      body: OverScrollColor(
-        direction: AxisDirection.down,
-        child: GridView.builder(
-          itemCount: genreTileParams.length,
-          physics: ClampingScrollPhysics(),
-          gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          itemBuilder: (context, index) {
-            dynamic item = genreTileParams[index];
-            return GridTile(
-              child: genreTile(
-                context,
-                tmdb,
-                color: item['color'],
-                title: item['title'],
-                icon: item['icon'],
-                invertTitleColor: item.containsKey('invert'),
-                movieFunc: item['function'],
-              ),
-            );
-          },
-        ),
+      body: GridView.builder(
+        itemCount: genreTileParams.length,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        itemBuilder: (context, index) {
+          dynamic item = genreTileParams[index];
+          return GridTile(
+            child: genreTile(
+              context,
+              tmdb,
+              color: item['color'],
+              title: item['title'],
+              icon: item['icon'],
+              invertTitleColor: item.containsKey('invert'),
+              movieFunc: item['function'],
+            ),
+          );
+        },
       ),
     );
   }

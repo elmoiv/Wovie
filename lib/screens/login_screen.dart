@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 import 'package:wovie/api/tmdb_helper.dart';
 import 'package:wovie/screens/main_screen.dart';
 import '../controllers/sharedprefs_controller.dart';
@@ -26,9 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void tryConnect() async {
     // Show Loading Cicle
     setState(() {
-      loadingSpinner = SpinKitFadingCircle(
+      loadingSpinner = SpinKitFadingFour(
         color: Theme.of(context).accentColor,
-        size: 50.0,
+        size: MediaQuery.of(context).size.width / 7,
       );
     });
 
@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     // Adding API_KEY to Shared Prefs
-    SharedPrefs().prefs!.setString('API_KEY', tmpApiKey);
+    SharedPrefs().setApiKey(tmpApiKey);
 
     /// First Time init only for TMDB will save the api key
     TMDB(apiKey: tmpApiKey);
@@ -97,7 +97,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-
+    String iconType =
+        'images/icon_letter_${Get.isDarkMode ? "dark" : "light"}.png';
     return Scaffold(
       body: FocusScope(
         child: SafeArea(
@@ -124,6 +125,29 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Hero(
+                            tag: 'wovie',
+                            child: Container(
+                              width: screenWidth / 4,
+                              height: screenWidth / 4,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(iconType),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Wovie Login',
+                            style:
+                                Theme.of(context).textTheme.headline4!.copyWith(
+                                      fontSize: screenWidth / 10,
+                                    ),
+                          ),
+                          SizedBox(
+                            height: screenWidth / 10,
+                          ),
                           Padding(
                             padding:
                                 const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 5.0),
