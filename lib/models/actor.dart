@@ -8,6 +8,7 @@ class Actor {
   String? actorPhoto;
   String? actorGender;
   String? actorCharacter;
+  int? actorIsAdult;
 
   Actor({
     this.actorId,
@@ -19,5 +20,6 @@ class Actor {
     this.actorPhoto,
     this.actorGender,
     this.actorCharacter,
+    this.actorIsAdult,
   });
 }

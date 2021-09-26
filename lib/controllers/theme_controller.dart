@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wovie/constants.dart';
 
 class Themes {
+  /// Light Theme
   static final light = ThemeData.light().copyWith(
     accentColor: kMaterialBlueColor,
     scaffoldBackgroundColor: Colors.white,
@@ -54,6 +55,7 @@ class Themes {
       backgroundColor: Colors.white,
       shadowColor: Colors.black,
       foregroundColor: Colors.black,
+      elevation: 1,
     ),
     sliderTheme: SliderThemeData().copyWith(
       trackHeight: 3,
@@ -64,9 +66,13 @@ class Themes {
     ),
   );
 
+  /// Dark Theme
   static final dark = ThemeData.dark().copyWith(
     scaffoldBackgroundColor: Colors.black,
-    accentColor: Color(0xffda1b37),
+    accentColor: kMaterialRedColor,
+    colorScheme: ColorScheme.dark().copyWith(
+      secondary: kMaterialRedColor,
+    ),
     cardColor: Colors.black,
     shadowColor: Colors.white,
     dialogTheme: DialogTheme(
@@ -86,7 +92,7 @@ class Themes {
 
       /// "|" in Details Section
       headline1: TextStyle(
-        color: Colors.redAccent,
+        color: kMaterialRedColor,
         fontWeight: FontWeight.bold,
         fontFamily: 'SourceSansPro',
       ),
@@ -100,7 +106,7 @@ class Themes {
 
       /// "View All" Button Text Color in Details Section
       headline3: TextStyle(
-        color: Colors.redAccent,
+        color: kMaterialRedColor,
         fontWeight: FontWeight.bold,
         fontFamily: 'SourceSansPro',
       ),
@@ -115,21 +121,24 @@ class Themes {
       backgroundColor: Colors.black,
       shadowColor: Colors.white,
       foregroundColor: Colors.white,
+      elevation: 1,
     ),
     sliderTheme: SliderThemeData().copyWith(
       trackHeight: 3,
       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
-      thumbColor: Colors.redAccent,
-      activeTrackColor: Colors.redAccent,
-      inactiveTrackColor: Colors.redAccent.withOpacity(0.5),
+      thumbColor: kMaterialRedColor,
+      activeTrackColor: kMaterialRedColor,
+      inactiveTrackColor: kMaterialRedColor.withOpacity(0.5),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: kMaterialRedColor,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.black,
-    ).copyWith(
-      selectedItemColor: Colors.redAccent,
+      selectedItemColor: kMaterialRedColor,
       unselectedItemColor: Colors.white.withOpacity(.7),
       selectedLabelStyle: TextStyle(
-        color: Colors.redAccent,
+        color: kMaterialRedColor,
         fontFamily: 'SourceSansPro',
       ),
       unselectedLabelStyle: TextStyle(

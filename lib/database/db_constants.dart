@@ -15,6 +15,7 @@ class Constants {
   static final String COL_DURATION = 'movieDuration';
   static final String COL_POSTER = 'moviePoster';
   static final String COL_BACKGROUND = 'movieBackground';
+  static final String COL_ISADULT = 'movieIsAdult';
 
   /// Database Version
   static final int DB_VERSION = 1;

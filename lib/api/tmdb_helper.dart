@@ -53,24 +53,19 @@ class TMDB {
   }
 
   Movie _toMovie(dynamic json) {
-    // Handle runtime for any api request
     dynamic runtime = _checkJsonKey(json, 'runtime', 0);
-    // Handle genres in movie api and popular api
     dynamic genreList = json.containsKey('genre_ids')
         ? json['genre_ids']
         : [json['genres'][0]['id']];
-
     dynamic backgroundImg = json['backdrop_path'] != null
         ? imageUrl + json['backdrop_path']
         : 'https://i.stack.imgur.com/y9DpT.jpg';
-
     dynamic posterImg = json['poster_path'] != null
         ? imagePosterUrl + json['poster_path']
         : 'https://critics.io/img/movies/poster-placeholder.png';
-
-    // Some release dates does not exist
-    dynamic release = _checkJsonKey(json, 'release_date', 'Coming Soon');
-    dynamic releaseDate = release ?? 'Coming Soon';
+    dynamic releaseDate =
+        _checkJsonKey(json, 'release_date', 'Coming Soon') ?? 'Coming Soon';
+    dynamic isAdult = _checkJsonKey(json, 'adult', false);
 
     return Movie(
       movieId: json['id'],
@@ -82,6 +77,7 @@ class TMDB {
       moviePoster: posterImg,
       movieBackground: backgroundImg,
       movieDuration: runtime,
+      movieIsAdult: isAdult ? 1 : 0,
     );
   }
 
@@ -96,6 +92,7 @@ class TMDB {
     dynamic gender = [1, 2].contains(_checkJsonKey(json, 'gender', 0))
         ? ['Female', 'Male'][json['gender'] - 1]
         : 'Unknown';
+    dynamic isAdult = _checkJsonKey(json, 'adult', false);
 
     return Actor(
       actorId: json['id'],
@@ -107,6 +104,7 @@ class TMDB {
       actorPhoto: profilePic,
       actorGender: gender,
       actorCharacter: character,
+      actorIsAdult: isAdult ? 1 : 0,
     );
   }
 
@@ -179,6 +177,7 @@ class TMDB {
       return [];
     }
 
+    this.pageNumber++;
     return json['results'].map<Movie>((e) => this._toMovie(e)).toList();
   }
 

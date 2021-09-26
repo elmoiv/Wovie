@@ -34,7 +34,8 @@ class DbHelper {
             ' ${Constants.COL_TITLE} text, ${Constants.COL_DESCRIPTION} text,' +
             ' ${Constants.COL_RELEASE} text, ${Constants.COL_RATE} float,' +
             ' ${Constants.COL_CATEGORY} text, ${Constants.COL_DURATION} integer,' +
-            ' ${Constants.COL_POSTER} text, ${Constants.COL_BACKGROUND} text)';
+            ' ${Constants.COL_POSTER} text, ${Constants.COL_BACKGROUND} text,' +
+            ' ${Constants.COL_ISADULT} integer)';
     db.execute(query);
   }
 
@@ -69,6 +70,18 @@ class DbHelper {
     try {
       Database db = await getDbInstance();
       db.delete(tableName, where: '${Constants.COL_ID}=${movie.movieId}');
+      return 0;
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  Future<int> remAllMovie(String type) async {
+    print('Removed all: $type');
+    String tableName = this._decideTableName(type);
+    try {
+      Database db = await getDbInstance();
+      db.delete(tableName);
       return 0;
     } catch (e) {
       return 1;

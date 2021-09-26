@@ -13,10 +13,6 @@ void main() {
   SharedPreferences.getInstance().then((prefs) {
     SharedPrefs(staticPrefs: prefs);
 
-    /// Add Default light theme if not set
-    if (SharedPrefs().prefs!.getString('APP_THEME') == null) {
-      SharedPrefs().prefs!.setString('APP_THEME', 'light');
-    }
     runApp(Wovie());
   });
 }
@@ -27,9 +23,10 @@ void main() {
 class Wovie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    String _theme = SharedPrefs().prefs!.getString('APP_THEME')!;
+    dynamic _theme = SharedPrefs().getAppTheme();
     return GetMaterialApp(
       /// Use saved theme from shared prefs
+      /// Default will be dark
       themeMode: _theme == 'light' ? ThemeMode.light : ThemeMode.dark,
       theme: Themes.light,
       darkTheme: Themes.dark,

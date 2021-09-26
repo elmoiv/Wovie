@@ -8,6 +8,7 @@ class Movie {
   int? movieDuration;
   String? moviePoster;
   String? movieBackground;
+  int? movieIsAdult;
 
   Movie({
     this.movieId,
@@ -19,6 +20,7 @@ class Movie {
     this.movieDuration,
     this.moviePoster,
     this.movieBackground,
+    this.movieIsAdult,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +34,7 @@ class Movie {
       'movieDuration': this.movieDuration,
       'moviePoster': this.moviePoster,
       'movieBackground': this.movieBackground,
+      'movieIsAdult': this.movieIsAdult,
     };
   }
 
@@ -45,5 +48,6 @@ class Movie {
     this.movieDuration = map['movieDuration'];
     this.moviePoster = map['moviePoster'];
     this.movieBackground = map['movieBackground'];
+    this.movieIsAdult = map['movieIsAdult'];
   }
 }
