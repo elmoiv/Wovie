@@ -54,13 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => MsgBox(
-          title: 'Network Error!',
-          content: e.toString(),
-        ),
-      );
+      connectionErrorMsg(context);
 
       // Hide Loading Circle
       setState(() {

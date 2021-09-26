@@ -27,7 +27,13 @@ class InsideHomeScreen extends StatelessWidget {
           DetailsSection(
             title: 'Upcoming',
             titleSize: screenWidth / 15,
-            verticalPadding: 20,
+            verticalPadding: screenWidth / 17,
+            viewMoreOnPressed: () => navPushTo(
+                context,
+                MoreMoviesScreen(
+                  title: 'Upcoming',
+                  movieFunc: getUpcoming,
+                )),
             child: FutureBuilder<List<Movie>>(
               future: tmdb.getMoviesUpcoming(),
               builder: (context, AsyncSnapshot<List<Movie>> snapshot) {
@@ -48,7 +54,7 @@ class InsideHomeScreen extends StatelessWidget {
           DetailsSection(
             title: 'Popular',
             titleSize: screenWidth / 15,
-            verticalPadding: 20,
+            verticalPadding: screenWidth / 17,
             viewMoreOnPressed: () => navPushTo(
                 context,
                 MoreMoviesScreen(
@@ -78,7 +84,7 @@ class InsideHomeScreen extends StatelessWidget {
           DetailsSection(
             title: 'Genres',
             titleSize: screenWidth / 15,
-            verticalPadding: 20,
+            verticalPadding: screenWidth / 17,
             viewMoreOnPressed: () => navPushTo(context, GenresScreen()),
             child: Container(
               height: screenWidth * 0.16 * 2 + 8 * 4,
@@ -123,7 +129,7 @@ class InsideHomeScreen extends StatelessWidget {
           DetailsSection(
             title: 'Top Actors',
             titleSize: screenWidth / 15,
-            verticalPadding: screenWidth / 18,
+            verticalPadding: screenWidth / 17,
             child: FutureBuilder<List<Actor>>(
               future: tmdb.getActorsPopular(),
               builder: (context, AsyncSnapshot<List<Actor>> snapshot) {

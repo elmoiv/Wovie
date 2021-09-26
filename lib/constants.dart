@@ -19,3 +19,4 @@ const kOnMovieTileRateTextStyle = TextStyle(
   color: Colors.white,
   fontWeight: FontWeight.bold,
 );
+const String kConnectionErrorMsg = 'Please check your connection or use a VPN.';

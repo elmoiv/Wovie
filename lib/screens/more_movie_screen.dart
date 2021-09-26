@@ -76,6 +76,7 @@ class _MoreMoviesScreenState extends State<MoreMoviesScreen> {
                 child: Text(
                   title,
                   style: TextStyle(
+                    fontSize: width / 20,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).shadowColor,
                   ),
@@ -217,13 +218,14 @@ class _MoreMoviesScreenState extends State<MoreMoviesScreen> {
       });
 
       /// Error msg on Internet or TMDB errors
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => MsgBox(
-          title: 'Error Caught',
-          content: e.toString(),
-        ),
-      );
+      // showDialog(
+      //   context: context,
+      //   builder: (BuildContext context) => MsgBox(
+      //     title: 'Error Caught',
+      //     content: e.toString(),
+      //   ),
+      // );
+      connectionErrorMsg(context);
     }
     isMovieFuncRunning = false;
   }

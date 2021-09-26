@@ -10,14 +10,16 @@ class TMDB {
 
   /// Static API_KEY
   String? API_KEY;
+  bool? dataSavingEnabled;
 
   /// Single Tone Design Pattern
   static TMDB? _helper;
-  TMDB._getInstance({this.API_KEY});
+  TMDB._getInstance({this.API_KEY, this.dataSavingEnabled});
 
-  factory TMDB({String? apiKey}) {
+  factory TMDB({String? apiKey, bool? savingEnabled = false}) {
     if (_helper == null) {
-      _helper = TMDB._getInstance(API_KEY: apiKey);
+      _helper =
+          TMDB._getInstance(API_KEY: apiKey, dataSavingEnabled: savingEnabled);
     }
     return _helper!;
   }
@@ -58,10 +60,14 @@ class TMDB {
         ? json['genre_ids']
         : [json['genres'][0]['id']];
     dynamic backgroundImg = json['backdrop_path'] != null
-        ? imageUrl + json['backdrop_path']
+        ? (this.dataSavingEnabled!
+                ? imageBackgroundUrlSD
+                : imageBackgroundUrlHD) +
+            json['backdrop_path']
         : 'https://i.stack.imgur.com/y9DpT.jpg';
     dynamic posterImg = json['poster_path'] != null
-        ? imagePosterUrl + json['poster_path']
+        ? (this.dataSavingEnabled! ? imagePosterUrlSD : imagePosterUrlHD) +
+            json['poster_path']
         : 'https://critics.io/img/movies/poster-placeholder.png';
     dynamic releaseDate =
         _checkJsonKey(json, 'release_date', 'Coming Soon') ?? 'Coming Soon';
@@ -83,7 +89,8 @@ class TMDB {
 
   Actor _toActor(dynamic json) {
     dynamic profilePic = json['profile_path'].runtimeType != Null
-        ? imageActorUrl + json['profile_path']
+        ? (this.dataSavingEnabled! ? imageActorUrlSD : imageActorUrlHD) +
+            json['profile_path']
         : 'https://hearhearforbhutan.org/wp-content/uploads/2019/09/avtar.png';
     dynamic bio = _checkJsonKey(json, 'biography', '-');
     dynamic birthday = _checkJsonKey(json, 'birthday', '-');

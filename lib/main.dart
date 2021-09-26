@@ -12,7 +12,7 @@ void main() {
   /// use it anywhere in the app
   SharedPreferences.getInstance().then((prefs) {
     SharedPrefs(staticPrefs: prefs);
-
+    SharedPrefs().initSettings();
     runApp(Wovie());
   });
 }

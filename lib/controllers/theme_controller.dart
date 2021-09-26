@@ -136,7 +136,7 @@ class Themes {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.black,
       selectedItemColor: kMaterialRedColor,
-      unselectedItemColor: Colors.white.withOpacity(.7),
+      unselectedItemColor: Colors.white.withOpacity(.8),
       selectedLabelStyle: TextStyle(
         color: kMaterialRedColor,
         fontFamily: 'SourceSansPro',

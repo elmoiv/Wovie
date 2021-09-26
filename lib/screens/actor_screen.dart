@@ -31,7 +31,7 @@ class _ActorScreenState extends State<ActorScreen> {
       try {
         return await tmdb.getActor(actor.actorId!);
       } catch (e) {
-        errorMsg(context, e);
+        connectionErrorMsg(context);
         return Actor();
       }
     }
@@ -181,8 +181,13 @@ Widget actorPage(context, Actor actor) {
               if (snapshot.hasData) {
                 return movieHorizontalListView(context, snapshot.data!);
               } else {
-                return SpinKitThreeBounce(
-                    color: Theme.of(context).accentColor, size: 40);
+                if (snapshot.hasError) {
+                  return ErrorWidget(context);
+                } else {
+                  return SpinKitThreeBounce(
+                      color: Theme.of(context).accentColor,
+                      size: screenWidth / 10);
+                }
               }
             },
           ),
@@ -345,6 +350,20 @@ Widget cachedActorPlaceholder(context) {
       child: Icon(
         Icons.person_rounded,
         size: MediaQuery.of(context).size.width / 3,
+      ),
+    ),
+  );
+}
+
+Widget ErrorWidget(context) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: Center(
+      child: Text(
+        'Connection Error',
+        style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width / 20,
+            color: kMaterialRedColor),
       ),
     ),
   );

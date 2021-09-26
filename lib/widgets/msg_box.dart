@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wovie/constants.dart';
 
 class MsgBox extends StatelessWidget {
   final String? title;
@@ -65,6 +66,17 @@ class MsgBox extends StatelessWidget {
       ],
     );
   }
+}
+
+Future<dynamic> connectionErrorMsg(context) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) => MsgBox(
+      hideFailureButton: true,
+      title: 'Network Error!',
+      content: kConnectionErrorMsg,
+    ),
+  );
 }
 
 dynamic errorMsg(context, e) {

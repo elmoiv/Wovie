@@ -131,13 +131,12 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          extendBody: true,
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               boxShadow: <BoxShadow>[
                 BoxShadow(
                     color: Theme.of(context).shadowColor,
-                    blurRadius: 1.0,
+                    blurRadius: 0.5,
                     offset: Offset(0.0, 0.75))
               ],
             ),

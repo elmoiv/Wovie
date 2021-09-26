@@ -5,11 +5,21 @@ const String popularUrl = movieUrl + 'popular/';
 const String upcomingUrl = movieUrl + 'upcoming/';
 const String actorUrl = apiUrl + 'person/';
 const String searchUrl = apiUrl + 'search/movie';
-const String imageUrl = 'https://image.tmdb.org/t/p/w500';
-const String imagePosterUrl =
+
+/// SD URLS
+const String imageBackgroundUrlSD = 'https://image.tmdb.org/t/p/w300';
+const String imagePosterUrlSD =
     'https://www.themoviedb.org/t/p/w220_and_h330_face';
-const String imageActorUrl =
+const String imageActorUrlSD =
     'https://www.themoviedb.org/t/p/w300_and_h450_bestv2';
+
+/// HD URLS
+const String imageBackgroundUrlHD =
+    'https://www.themoviedb.org/t/p/w1920_and_h800_multi_faces';
+const String imagePosterUrlHD =
+    'https://www.themoviedb.org/t/p/w600_and_h900_bestv2';
+const String imageActorUrlHD =
+    'https://www.themoviedb.org/t/p/w600_and_h900_bestv2';
 const Map<int, String> genreIntStr = {
   28: 'Action',
   12: 'Adventure',

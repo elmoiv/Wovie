@@ -161,7 +161,7 @@ class _UpcomingMovieTileState extends State<UpcomingMovieTile> {
                       child: Icon(
                         Icons.play_circle_filled_outlined,
                         size: screenWidth / 8,
-                        color: Colors.red,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                   ),

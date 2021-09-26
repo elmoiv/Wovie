@@ -262,7 +262,7 @@ class _MovieScreenState extends State<MovieScreen> {
                                 child: Icon(
                                   Icons.play_circle_filled_outlined,
                                   size: screenWidth / 8,
-                                  color: Colors.red,
+                                  color: Theme.of(context).accentColor,
                                 ),
                               ),
                             ),
@@ -371,9 +371,13 @@ class _MovieScreenState extends State<MovieScreen> {
                       if (snapshot.hasData) {
                         return castMovieListView(context, snapshot.data!);
                       } else {
-                        return SpinKitThreeBounce(
-                            color: Theme.of(context).accentColor,
-                            size: screenWidth / 10);
+                        if (snapshot.hasError) {
+                          return ErrorWidget(context);
+                        } else {
+                          return SpinKitThreeBounce(
+                              color: Theme.of(context).accentColor,
+                              size: screenWidth / 10);
+                        }
                       }
                     },
                   ),
@@ -390,9 +394,13 @@ class _MovieScreenState extends State<MovieScreen> {
                       if (snapshot.hasData) {
                         return movieHorizontalListView(context, snapshot.data!);
                       } else {
-                        return SpinKitThreeBounce(
-                            color: Theme.of(context).accentColor,
-                            size: screenWidth / 10);
+                        if (snapshot.hasError) {
+                          return ErrorWidget(context);
+                        } else {
+                          return SpinKitThreeBounce(
+                              color: Theme.of(context).accentColor,
+                              size: screenWidth / 10);
+                        }
                       }
                     },
                   ),
@@ -467,6 +475,20 @@ Widget cachedBackgroundPlaceholder(screenHeight, {bool error = false}) {
       image: DecorationImage(
         image: AssetImage('images/placeholder${error ? 'Error' : ''}.png'),
         fit: BoxFit.cover,
+      ),
+    ),
+  );
+}
+
+Widget ErrorWidget(context) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: Center(
+      child: Text(
+        'Connection Error',
+        style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width / 20,
+            color: kMaterialRedColor),
       ),
     ),
   );

@@ -53,39 +53,36 @@ class _FavOrWatchScreenState extends State<FavOrWatchScreen> {
     /// Clear badges counters
     return Scaffold(
       extendBody: true,
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: height / 10),
-        child: FloatingActionButton(
-          heroTag: null,
-          elevation: 1,
-          child: Icon(
-            Icons.delete_forever,
-            size: 30,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return MsgBox(
-                  title: 'Remove all',
-                  content:
-                      'You are about to remove all your ${widget.screenTitle!.toLowerCase()} movies!' +
-                          '\n\nPress Yes to proceed.',
-                  successText: 'Yes',
-                  failureText: 'No',
-                  onPressedSuccess: () {
-                    removeAllSqlMovies();
-                    Navigator.pop(context);
-                  },
-                );
-              },
-            );
-          },
+      floatingActionButton: FloatingActionButton(
+        heroTag: null,
+        elevation: 1,
+        child: Icon(
+          Icons.delete_forever,
+          size: 30,
+          color: Colors.white,
         ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return MsgBox(
+                title: 'Remove all',
+                content:
+                    'You are about to remove all your ${widget.screenTitle!.toLowerCase()} movies!' +
+                        '\n\nPress Yes to proceed.',
+                successText: 'Yes',
+                failureText: 'No',
+                onPressedSuccess: () {
+                  removeAllSqlMovies();
+                  Navigator.pop(context);
+                },
+              );
+            },
+          );
+        },
       ),
       body: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: FutureBuilder<bool>(
           future: fetchSqlMovies(),
           builder: (context, AsyncSnapshot<bool> snapshot) {

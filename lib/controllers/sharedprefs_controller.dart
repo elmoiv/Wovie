@@ -15,6 +15,34 @@ class SharedPrefs {
     return _helper!;
   }
 
+  void initSettings() {
+    if (getDataSaving() == null) {
+      setDataSaving(false);
+    }
+    if (getCheckNetOnStartUp() == null) {
+      setCheckNetOnStartUp(true);
+    }
+    if (getAppTheme() == null) {
+      setAppTheme('dark');
+    }
+  }
+
+  void setCheckNetOnStartUp(bool val) {
+    this.prefs!.setBool('CHECK_NET_STARTUP', val);
+  }
+
+  dynamic getCheckNetOnStartUp() {
+    return this.prefs!.getBool('CHECK_NET_STARTUP');
+  }
+
+  void setDataSaving(bool val) {
+    this.prefs!.setBool('DATA_SAVING', val);
+  }
+
+  dynamic getDataSaving() {
+    return this.prefs!.getBool('DATA_SAVING');
+  }
+
   void setApiKey(String val) {
     this.prefs!.setString('API_KEY', val);
   }

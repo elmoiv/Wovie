@@ -6,14 +6,15 @@ import 'package:wovie/controllers/backup_restore_controller.dart';
 import 'package:wovie/controllers/database_realtime_controller.dart';
 import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/models/movie.dart';
+import 'package:wovie/screens/about_screen.dart';
 import 'package:wovie/screens/login_screen.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:wovie/utils/cache_cleaner.dart';
+import 'package:wovie/utils/easy_navigator.dart';
 import 'package:wovie/utils/request_read_write.dart';
 import 'package:wovie/utils/toast.dart';
 import '../controllers/sharedprefs_controller.dart';
 import 'package:wovie/widgets/msg_box.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -24,6 +25,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final MovieListController movieListController =
       Get.put(MovieListController());
   bool themeValue = Get.isDarkMode;
+  bool dataSavingValue = SharedPrefs().getDataSaving();
+  bool netOnStartUpValue = SharedPrefs().getCheckNetOnStartUp();
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +157,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
               SettingsSection(
+                title: 'Connection',
+                titleTextStyle: TextStyle(color: Theme.of(context).accentColor),
+                tiles: [
+                  SettingsTile.switchTile(
+                    title: 'Data Saving Mode',
+                    titleTextStyle:
+                        TextStyle(color: Theme.of(context).shadowColor),
+                    subtitleTextStyle: TextStyle(
+                        color: Theme.of(context).shadowColor.withOpacity(0.6)),
+                    switchActiveColor: iconsColor,
+                    subtitle: dataSavingValue ? 'Enabled' : 'Disabled',
+                    switchValue: dataSavingValue,
+                    leading: Icon(
+                      dataSavingValue
+                          ? Icons.data_saver_on
+                          : Icons.data_saver_off,
+                      color: iconsColor,
+                    ),
+                    onToggle: (newValue) {
+                      SharedPrefs().setDataSaving(newValue);
+                      TMDB().dataSavingEnabled = newValue;
+                      setState(() {
+                        dataSavingValue = newValue;
+                      });
+                      toast('Refresh Home screen to apply new changes');
+                    },
+                  ),
+                  SettingsTile.switchTile(
+                    title: 'Network Check on Startup',
+                    titleTextStyle:
+                        TextStyle(color: Theme.of(context).shadowColor),
+                    subtitleTextStyle: TextStyle(
+                        color: Theme.of(context).shadowColor.withOpacity(0.6)),
+                    switchActiveColor: iconsColor,
+                    subtitle: netOnStartUpValue ? 'Enabled' : 'Disabled',
+                    switchValue: netOnStartUpValue,
+                    leading: Icon(
+                      netOnStartUpValue ? Icons.wifi : Icons.wifi_off,
+                      color: iconsColor,
+                    ),
+                    onToggle: (newValue) {
+                      SharedPrefs().setCheckNetOnStartUp(newValue);
+                      setState(() {
+                        netOnStartUpValue = newValue;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              SettingsSection(
                 title: 'Misc',
                 titleTextStyle: TextStyle(color: Theme.of(context).accentColor),
                 tiles: [
@@ -229,7 +282,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: iconsColor,
                     ),
                     onLongPressed: (context) {},
-                    onPressed: (_) {},
+                    onPressed: (_) {
+                      navPushTo(context, AboutScreen());
+                    },
                   ),
                 ],
               ),

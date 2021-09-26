@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:wovie/api/tmdb_helper.dart';
+import 'package:wovie/constants.dart';
 import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/screens/login_screen.dart';
 import 'package:wovie/screens/main_screen.dart';
@@ -15,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool isError = false;
+  bool checkNetOnStartUp = SharedPrefs().getCheckNetOnStartUp();
 
   @override
   void initState() {
@@ -30,7 +32,9 @@ class _SplashScreenState extends State<SplashScreen> {
         'images/icon_letter_${Get.isDarkMode ? "dark" : "light"}.png';
     return Scaffold(
       body: Center(
-        child: Stack(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Hero(
@@ -47,27 +51,20 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            Column(
-              children: [
-                SizedBox(
-                  height: screenHeight / 1.7,
-                ),
-                Center(
-                  child: Text(
-                    'Wovie',
-                    style: Theme.of(context).textTheme.headline4!.copyWith(
-                          fontSize: screenWidth / 10,
-                        ),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                SpinKitSquareCircle(
-                  color: Theme.of(context).accentColor,
-                  size: screenWidth / 12,
-                ),
-              ],
+            Center(
+              child: Text(
+                'Wovie',
+                style: Theme.of(context).textTheme.headline4!.copyWith(
+                      fontSize: screenWidth / 10,
+                    ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            SpinKitSquareCircle(
+              color: Theme.of(context).accentColor,
+              size: screenWidth / 12,
             ),
           ],
         ),
@@ -97,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     /// First Time init only for TMDB will save the api key
-    TMDB(apiKey: API_KEY);
+    TMDB(apiKey: API_KEY, savingEnabled: SharedPrefs().getDataSaving());
 
     // Check for Internet issues first
     try {
@@ -119,14 +116,11 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     } catch (e) {
       isError = true;
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => MsgBox(
-          hideFailureButton: true,
-          title: 'Network Error!',
-          content: 'Please check your connection or use a VPN.',
-        ),
-      ).then((value) => jumpToLoginOrMain());
+      if (checkNetOnStartUp) {
+        connectionErrorMsg(context).then((value) => jumpToLoginOrMain());
+      } else {
+        isError = false;
+      }
     }
     if (!isError) {
       Navigator.of(context).pushReplacement(

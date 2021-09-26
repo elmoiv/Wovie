@@ -85,6 +85,7 @@ Widget genreTile(
   );
 }
 
+Function getUpcoming = () => TMDB().getMoviesUpcoming();
 Function getPopular = () => TMDB().getMoviesPopular();
 Function getGenreAction = () => TMDB().getMoviesByGenre(genre: 'Action');
 Function getGenreAdventure = () => TMDB().getMoviesByGenre(genre: 'Adventure');
