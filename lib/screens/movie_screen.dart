@@ -369,7 +369,9 @@ class _MovieScreenState extends State<MovieScreen> {
                     future: tmdb.getActorsCast(movie.movieId!),
                     builder: (context, AsyncSnapshot<List<Actor>> snapshot) {
                       if (snapshot.hasData) {
-                        return castMovieListView(context, snapshot.data!);
+                        return snapshot.data!.length == 0
+                            ? NotFoundWidget(context, 'cast')
+                            : castMovieListView(context, snapshot.data!);
                       } else {
                         if (snapshot.hasError) {
                           return ErrorWidget(context);
@@ -392,7 +394,9 @@ class _MovieScreenState extends State<MovieScreen> {
                     future: tmdb.getMoviesSimilar(movie.movieId!),
                     builder: (context, AsyncSnapshot<List<Movie>> snapshot) {
                       if (snapshot.hasData) {
-                        return movieHorizontalListView(context, snapshot.data!);
+                        return snapshot.data!.length == 0
+                            ? NotFoundWidget(context, 'movies')
+                            : movieHorizontalListView(context, snapshot.data!);
                       } else {
                         if (snapshot.hasError) {
                           return ErrorWidget(context);
@@ -475,6 +479,21 @@ Widget cachedBackgroundPlaceholder(screenHeight, {bool error = false}) {
       image: DecorationImage(
         image: AssetImage('images/placeholder${error ? 'Error' : ''}.png'),
         fit: BoxFit.cover,
+      ),
+    ),
+  );
+}
+
+Widget NotFoundWidget(context, String errorText) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: Center(
+      child: Text(
+        'No $errorText found!',
+        style: Theme.of(context).textTheme.headline4!.copyWith(
+              fontSize: MediaQuery.of(context).size.width / 20,
+              color: Theme.of(context).accentColor,
+            ),
       ),
     ),
   );

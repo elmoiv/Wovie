@@ -15,7 +15,7 @@ const String imageActorUrlSD =
 
 /// HD URLS
 const String imageBackgroundUrlHD =
-    'https://www.themoviedb.org/t/p/w1920_and_h800_multi_faces';
+    'https://www.themoviedb.org/t/p/w533_and_h300_bestv2';
 const String imagePosterUrlHD =
     'https://www.themoviedb.org/t/p/w600_and_h900_bestv2';
 const String imageActorUrlHD =

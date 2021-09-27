@@ -179,7 +179,9 @@ Widget actorPage(context, Actor actor) {
             future: tmdb.getActorMovies(actor.actorId!),
             builder: (context, AsyncSnapshot<List<Movie>> snapshot) {
               if (snapshot.hasData) {
-                return movieHorizontalListView(context, snapshot.data!);
+                return snapshot.data!.length == 0
+                    ? NotFoundWidget(context, 'movies')
+                    : movieHorizontalListView(context, snapshot.data!);
               } else {
                 if (snapshot.hasError) {
                   return ErrorWidget(context);
@@ -350,6 +352,21 @@ Widget cachedActorPlaceholder(context) {
       child: Icon(
         Icons.person_rounded,
         size: MediaQuery.of(context).size.width / 3,
+      ),
+    ),
+  );
+}
+
+Widget NotFoundWidget(context, String errorText) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: Center(
+      child: Text(
+        'No $errorText found!',
+        style: Theme.of(context).textTheme.headline4!.copyWith(
+              fontSize: MediaQuery.of(context).size.width / 20,
+              color: Theme.of(context).accentColor,
+            ),
       ),
     ),
   );

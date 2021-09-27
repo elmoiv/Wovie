@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -46,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: SettingsList(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             sections: [
@@ -93,30 +95,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitleTextStyle: TextStyle(
                         color: Theme.of(context).shadowColor.withOpacity(0.6)),
                     switchActiveColor: iconsColor,
-                    subtitle: 'Create a local backup of your saved movies',
+                    subtitle: 'Long Press for a quick backup',
                     leading: Icon(
                       Icons.save_alt,
                       color: iconsColor,
                     ),
-                    onLongPressed: (context) {},
+                    onLongPressed: (context) async {
+                      /// Handle overwriting existing backup
+                      bool yesPressed = false;
+                      if (File('/storage/emulated/0/Wovie/wovie_settings.json')
+                          .existsSync()) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => MsgBox(
+                            title: 'Old Backup Found!',
+                            content:
+                                'Do you want to overwrite the existing backup?',
+                            successText: 'YES',
+                            failureText: 'NO',
+                            onPressedSuccess: () async {
+                              yesPressed = true;
+                              await backupFunction(usePicker: false);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ).then((value) {
+                          if (!yesPressed) {
+                            toast('Backup has been cancelled!');
+                          }
+                        });
+                      } else {
+                        await backupFunction(usePicker: false);
+                      }
+                    },
                     onPressed: (context) async {
-                      /// Request Write Access
-                      await requestReadWrite();
-
-                      /// Backup Data
-                      BackupController _backup = BackupController.initBackup(
-                        favMovies: await DbHelper().getAllMovies('fav'),
-                        watMovies: await DbHelper().getAllMovies('wat'),
-                      );
-                      _backup.backupSettings().then((value) {
-                        switch (value) {
-                          case RETURN_CODE.SUCCESS:
-                            return toast(
-                                'Backup saved at: "/storage/emulated/0/Wovie"');
-                          case RETURN_CODE.NO_ACCESS:
-                            return toast('Can\'t get Write Access!');
-                        }
-                      });
+                      await backupFunction(usePicker: true);
                     },
                   ),
                   SettingsTile(
@@ -126,32 +139,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitleTextStyle: TextStyle(
                         color: Theme.of(context).shadowColor.withOpacity(0.6)),
                     switchActiveColor: iconsColor,
-                    subtitle: 'Restore a local backup',
+                    subtitle: 'Long Press for a quick restore',
                     leading: Icon(
                       Icons.restore,
                       color: iconsColor,
                     ),
-                    onLongPressed: (context) {},
+                    onLongPressed: (context) async {
+                      await restoreFunction(usePicker: false);
+                    },
                     onPressed: (context) async {
-                      /// Request Read Access
-                      await requestReadWrite();
-
-                      /// Restore Backup
-                      BackupController _backup = BackupController.initRestore();
-                      _backup.restoreSettings().then(
-                        (value) async {
-                          switch (value) {
-                            case RETURN_CODE.EXIT:
-                              return toast('Restore has been cancelled!');
-                            case RETURN_CODE.NO_ACCESS:
-                              return toast('Can\'t get Read Access!');
-                            case RETURN_CODE.DAMAGED:
-                              return toast('Damaged Backup File!');
-                            default:
-                              restoreInBackground(_backup.json);
-                          }
-                        },
-                      );
+                      await restoreFunction(usePicker: true);
                     },
                   ),
                 ],
@@ -306,6 +303,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await DbHelper().addAllMovies(movies, type);
     await fetchSqlMovies(type);
     return true;
+  }
+
+  Future<void> backupFunction({bool usePicker = false}) async {
+    /// Request Write Access
+    if (!await requestReadWrite()) {
+      return toast('Can\'t get Write Access!');
+    }
+
+    /// Backup Data
+    BackupController _backup = BackupController.initBackup(
+      favMovies: await DbHelper().getAllMovies('fav'),
+      watMovies: await DbHelper().getAllMovies('wat'),
+    );
+    _backup.backupSettings(usePicker).then((values) {
+      switch (values[0]) {
+        case RETURN_CODE.EXIT:
+          return toast('Backup has been cancelled!');
+        case RETURN_CODE.SUCCESS:
+          return toast('Backup saved at: "${values[1]}"');
+        case RETURN_CODE.NO_ACCESS:
+          return toast('Can\'t get Write Access!');
+      }
+    });
+  }
+
+  Future<void> restoreFunction({bool usePicker = false}) async {
+    /// Request Read Access
+    if (!await requestReadWrite()) {
+      return toast('Can\'t get Read Access!');
+    }
+
+    /// Restore Backup
+    BackupController _backup = BackupController.initRestore();
+    _backup.restoreSettings(usePicker).then(
+      (value) async {
+        switch (value) {
+          case RETURN_CODE.NOT_FOUND:
+            return showDialog(
+              context: context,
+              builder: (BuildContext context) => MsgBox(
+                title: 'Restore Failed!',
+                content: 'Wovie did not find any backups',
+              ),
+            );
+          case RETURN_CODE.EXIT:
+            return toast('Restore has been cancelled!');
+          case RETURN_CODE.NO_ACCESS:
+            return toast('Can\'t get Read Access!');
+          case RETURN_CODE.DAMAGED:
+            return toast('Damaged Backup File!');
+          default:
+            restoreInBackground(_backup.json);
+        }
+      },
+    );
   }
 
   /// Restore backups in background (When not using await with main func)

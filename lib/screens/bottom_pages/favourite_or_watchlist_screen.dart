@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:wovie/controllers/database_realtime_controller.dart';
 import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/models/movie.dart';
+import 'package:wovie/utils/data_saver_fav_wat_handler.dart';
 import 'package:wovie/widgets/movie_grid_view.dart';
 import 'package:wovie/widgets/msg_box.dart';
 
@@ -96,6 +97,12 @@ class _FavOrWatchScreenState extends State<FavOrWatchScreen> {
                           movieListController
                               .getMovieList(type)
                               .reversed
+                              .toList()
+
+                              /// Fix movies in favourite and watchlist does not obey datasaving
+                              /// mode cuz they have their image urls stored in sqflite db
+                              /// we convert each movie image according to current data saver mode
+                              .map((e) => handleImageUrl(e))
                               .toList(),
                         ),
                       )

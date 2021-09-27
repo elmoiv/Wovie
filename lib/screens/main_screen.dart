@@ -71,10 +71,11 @@ class _MainScreenState extends State<MainScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                          image: DecorationImage(
-                        image: AssetImage(iconType),
-                        fit: BoxFit.fill,
-                      )),
+                        image: DecorationImage(
+                          image: AssetImage(iconType),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
                     ),
                   ),
                   Text(
@@ -96,7 +97,7 @@ class _MainScreenState extends State<MainScreen> {
                       });
                     },
                     child: AnimSearchBar(
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: Theme.of(context).cardColor,
                       foregroundColor: Theme.of(context).shadowColor,
                       helpText: 'Search for a movie',
                       fontSize: screenWidth / 20,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:wovie/api/tmdb_helper.dart';
-import 'package:wovie/constants.dart';
 import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/screens/login_screen.dart';
 import 'package:wovie/screens/main_screen.dart';
@@ -27,7 +26,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     String iconType =
         'images/icon_letter_${Get.isDarkMode ? "dark" : "light"}.png';
     return Scaffold(
@@ -78,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
     DbHelper dbHelper = DbHelper();
     await dbHelper.getDbInstance();
 
-    await Future.delayed(Duration(milliseconds: 1750));
+    await Future.delayed(Duration(milliseconds: 1500));
 
     // get API_KEY
     dynamic API_KEY = SharedPrefs().getApiKey();
