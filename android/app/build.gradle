@@ -43,6 +43,7 @@ android {
         applicationId "com.elmoiv.wovie"
         minSdkVersion 17
         targetSdkVersion 28
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
