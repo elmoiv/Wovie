@@ -54,7 +54,8 @@ class DetailsSection extends StatelessWidget {
                     child: Text(
                       'View All',
                       style: Theme.of(context).textTheme.headline3!.copyWith(
-                            fontSize: this.titleSize! - 10,
+                            fontSize: this.titleSize! -
+                                MediaQuery.of(context).size.width / 36,
                           ),
                     ),
                   )
@@ -62,7 +63,7 @@ class DetailsSection extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 10,
+          height: MediaQuery.of(context).size.width / 36,
         ),
         this.child!,
         SizedBox(

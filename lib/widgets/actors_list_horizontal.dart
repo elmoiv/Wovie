@@ -22,8 +22,8 @@ Widget castMovieListView(context, List<Actor> castList) {
             );
           },
           child: Container(
-            width: 100,
-            height: 150,
+            width: MediaQuery.of(context).size.width / 3.5,
+            height: MediaQuery.of(context).size.height / 5,
             child: actorTile(
               context,
               castList[index],

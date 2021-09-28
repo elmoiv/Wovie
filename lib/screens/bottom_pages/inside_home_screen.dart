@@ -167,44 +167,6 @@ Widget ErrorWidget(context) {
   );
 }
 
-Widget HomeAppBar(context) {
-  double height = MediaQuery.of(context).size.height;
-  double width = MediaQuery.of(context).size.width;
-  return Stack(
-    // mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1.1,
-              blurRadius: 2.5,
-              offset: Offset(0, 0), // changes position of shadow
-            )
-          ],
-        ),
-        height: height / 15,
-        width: double.infinity,
-      ),
-      Container(
-        height: height / 15,
-        width: double.infinity,
-        color: Colors.white,
-        child: Center(
-          child: Text(
-            'Wovie',
-            style: TextStyle(
-              fontSize: width / 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 Widget upcomingMoviesSlider(context, List<Movie> movieList) {
   double height = MediaQuery.of(context).size.height / 4;
   return Container(

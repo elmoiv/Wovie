@@ -81,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
                   Text(
                     'ovie',
                     style: Theme.of(context).textTheme.headline4!.copyWith(
-                          fontSize: screenWidth / 10,
+                          fontSize: 36,
                         ),
                   ),
                 ],

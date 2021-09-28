@@ -25,6 +25,13 @@ class Wovie extends StatelessWidget {
   Widget build(BuildContext context) {
     dynamic _theme = SharedPrefs().getAppTheme();
     return GetMaterialApp(
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child!,
+        );
+      },
+
       /// Use saved theme from shared prefs
       /// Default will be dark
       themeMode: _theme == 'light' ? ThemeMode.light : ThemeMode.dark,
