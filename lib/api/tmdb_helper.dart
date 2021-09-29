@@ -267,16 +267,3 @@ class TMDB {
         .toList();
   }
 }
-
-// void main() async {
-//   TMDB tmdb = TMDB();
-//   tmdb.API_KEY = '85a2339b494ed248f326dd9bf8502026';
-//   print('Checking API Key...');
-//   if (await tmdb.isNotValidApiKey()) {
-//     print('Incorrect API KEY');
-//     return;
-//   }
-//   print('Connecting...');
-//   var x = await tmdb.searchMovie('Spider man 2');
-//   print(x[0].toMap());
-// }
