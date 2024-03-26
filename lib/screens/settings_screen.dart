@@ -10,7 +10,7 @@ import 'package:wovie/database/db_helper.dart';
 import 'package:wovie/models/movie.dart';
 import 'package:wovie/screens/about_screen.dart';
 import 'package:wovie/screens/login_screen.dart';
-import 'package:settings_ui/settings_ui.dart';
+import 'package:wovie/custom_dart_packages/settings_ui/settings_ui.dart';
 import 'package:wovie/utils/cache_cleaner.dart';
 import 'package:wovie/utils/easy_navigator.dart';
 import 'package:wovie/utils/request_read_write.dart';
@@ -208,11 +208,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 titleTextStyle: TextStyle(color: Theme.of(context).accentColor),
                 tiles: [
                   SettingsTile(
-                    title: 'API Key',
+                    title: 'Access Token Auth',
                     titleTextStyle:
                         TextStyle(color: Theme.of(context).shadowColor),
                     subtitleTextStyle: TextStyle(
-                        color: Theme.of(context).shadowColor.withOpacity(0.6)),
+                        color: Theme.of(context).shadowColor.withOpacity(0.6),
+                        overflow: TextOverflow.fade),
                     switchActiveColor: iconsColor,
                     subtitle: TMDB().API_KEY,
                     leading: Icon(
@@ -223,13 +224,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Clipboard.setData(
                         ClipboardData(text: TMDB().API_KEY),
                       );
-                      toast('API Key has been copied');
+                      toast('Access Token Auth has been copied');
                     },
                     onPressed: (context) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) => MsgBox(
-                          title: 'Change API Key',
+                          title: 'Change Access Token Auth',
                           content: 'Are you sure?',
                           successText: 'Yes',
                           failureText: 'No',

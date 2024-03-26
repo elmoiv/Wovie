@@ -80,7 +80,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // get API_KEY
     dynamic API_KEY = SharedPrefs().getApiKey();
-
     // Checking for API_KEY
     if (API_KEY == null) {
       Navigator.of(context).pushReplacement(
@@ -97,11 +96,11 @@ class _SplashScreenState extends State<SplashScreen> {
     // Check for Internet issues first
     try {
       // Checking if API_KEY is correct
-      if (await TMDB.isNotValidApiKey(apiKey: API_KEY)) {
+      if (await TMDB.isNotValidApiKey(apiKey: API_KEY) == false) {
         showDialog(
           context: context,
           builder: (BuildContext context) => MsgBox(
-            title: 'Invalid API Key!',
+            title: 'Invalid Access Token Auth!',
             content: 'Please check your key or get one from TMDB',
           ),
         );

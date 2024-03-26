@@ -24,9 +24,16 @@ class TMDB {
     return _helper!;
   }
 
-  static Future<dynamic> _getJson(String url) async {
+  static Future<dynamic> _getJson(String url, [String? optionalApiKey]) async {
     var uri = Uri.parse(url);
-    http.Response response = await http.get(uri);
+    String? apiKey = optionalApiKey ?? TMDB().API_KEY;
+    print(apiKey);
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $apiKey',
+      'accept': 'application/json',
+    };
+    http.Response response = await http.get(uri, headers: headers);
+    print(response.body);
     return jsonDecode(response.body);
   }
 
@@ -37,8 +44,9 @@ class TMDB {
   }
 
   static Future<bool> isNotValidApiKey({String? apiKey}) async {
-    dynamic json = await _getJson('${movieUrl}10000?api_key=$apiKey');
-    return json.containsKey('success');
+    dynamic json =
+        await _getJson('https://api.themoviedb.org/3/authentication', apiKey);
+    return json['success'];
   }
 
   String? _toGenre(dynamic genreList) {
@@ -116,13 +124,13 @@ class TMDB {
   }
 
   Future<Movie> getMovie(int id) async {
-    dynamic json = await _getJson('$movieUrl$id?api_key=$API_KEY');
+    dynamic json = await _getJson('$movieUrl$id');
     return this._toMovie(json);
   }
 
   Future<List<Movie>> getMoviesSearch() async {
-    dynamic json = await _getJson(
-        '$searchUrl?api_key=$API_KEY&query=${this.searchQuery}&page=$pageNumber');
+    dynamic json =
+        await _getJson('$searchUrl?query=${this.searchQuery}&page=$pageNumber');
 
     if (json.containsKey('errors')) {
       return [];
@@ -133,7 +141,7 @@ class TMDB {
   }
 
   Future<String> getMovieVideoKey(int id) async {
-    dynamic json = await _getJson('$movieUrl$id/videos?api_key=$API_KEY');
+    dynamic json = await _getJson('$movieUrl$id/videos');
 
     if (json.containsKey('errors')) {
       return '';
@@ -153,8 +161,8 @@ class TMDB {
 
   Future<List<Movie>> getMoviesByGenre({String? genre}) async {
     int? genreId = genreStrInt[genre];
-    dynamic json = await _getJson(
-        '$genreUrl?api_key=$API_KEY&with_genres=$genreId&page=$pageNumber');
+    dynamic json =
+        await _getJson('$genreUrl?with_genres=$genreId&page=$pageNumber');
 
     if (json.containsKey('errors')) {
       return [];
@@ -165,8 +173,7 @@ class TMDB {
   }
 
   Future<List<Movie>> getMoviesPopular() async {
-    dynamic json =
-        await _getJson('$popularUrl?api_key=$API_KEY&page=$pageNumber');
+    dynamic json = await _getJson('$popularUrl?page=$pageNumber');
 
     if (json.containsKey('errors')) {
       return [];
@@ -178,7 +185,8 @@ class TMDB {
 
   Future<List<Movie>> getMoviesUpcoming() async {
     dynamic json =
-        await _getJson('$upcomingUrl?api_key=$API_KEY&page=$pageNumber');
+        await _getJson('$upcomingUrl?language=en-US&page=$pageNumber');
+    print('$upcomingUrl?page=$pageNumber');
 
     if (json.containsKey('errors')) {
       return [];
@@ -189,7 +197,7 @@ class TMDB {
   }
 
   Future<List<Movie>> getMoviesSimilar(int id) async {
-    dynamic json = await _getJson('$movieUrl$id/similar?api_key=$API_KEY');
+    dynamic json = await _getJson('$movieUrl$id/similar?API_KEY');
 
     if (json.containsKey('errors')) {
       return [];
@@ -203,12 +211,12 @@ class TMDB {
   }
 
   Future<Actor> getActor(int id) async {
-    dynamic json = await _getJson('$actorUrl$id?api_key=$API_KEY');
+    dynamic json = await _getJson('$actorUrl$id?API_KEY');
     return this._toActor(json);
   }
 
   Future<List<Actor>> getActorsCast(int id) async {
-    dynamic json = await _getJson('$movieUrl$id/credits?api_key=$API_KEY');
+    dynamic json = await _getJson('$movieUrl$id/credits');
 
     if (json.containsKey('errors')) {
       return [];
@@ -227,7 +235,7 @@ class TMDB {
   }
 
   Future<List<Actor>> getActorsPopular() async {
-    dynamic json = await _getJson('${actorUrl}popular?api_key=$API_KEY');
+    dynamic json = await _getJson('${actorUrl}popular');
 
     if (json.containsKey('errors')) {
       return [];
@@ -238,8 +246,7 @@ class TMDB {
   }
 
   Future<List<Movie>> getActorMovies(int id) async {
-    dynamic json =
-        await _getJson('$actorUrl$id/movie_credits?api_key=$API_KEY');
+    dynamic json = await _getJson('$actorUrl$id/movie_credits');
 
     if (json.containsKey('errors')) {
       return [];
@@ -267,3 +274,16 @@ class TMDB {
         .toList();
   }
 }
+
+// void main() async {
+//   TMDB tmdb = TMDB();
+//   tmdb.API_KEY = '85a2339b494ed248f326dd9bf8502026';
+//   print('Checking API Key...');
+//   if (await tmdb.isNotValidApiKey()) {
+//     print('Incorrect API KEY');
+//     return;
+//   }
+//   print('Connecting...');
+//   var x = await tmdb.searchMovie('Spider man 2');
+//   print(x[0].toMap());
+// }

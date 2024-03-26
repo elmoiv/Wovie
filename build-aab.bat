@@ -1,0 +1,1 @@
+flutter clean && flutter build appbundle --release --no-shrink --obfuscate --split-debug-info=/wovie && copy bundletool.jar build\app\outputs\bundle\release\bundletool.jar && copy extract.bat build\app\outputs\bundle\release\extract.bat

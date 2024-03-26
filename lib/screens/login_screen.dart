@@ -37,11 +37,11 @@ class _LoginScreenState extends State<LoginScreen> {
     // Check for Internet issues first
     try {
       // Checking if API_KEY is correct
-      if (await TMDB.isNotValidApiKey(apiKey: tmpApiKey)) {
+      if (await TMDB.isNotValidApiKey(apiKey: tmpApiKey) == false) {
         showDialog(
           context: context,
           builder: (BuildContext context) => MsgBox(
-            title: 'Invalid API Key!',
+            title: 'Invalid Access Token Auth!',
             content: 'Please check your key or get one from TMDB',
           ),
         );
@@ -154,10 +154,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               obscureText: !_passwordVisible,
                               onChanged: (value) => API_KEY = value,
                               controller: _userApi,
-                              validator: (value) =>
-                                  value!.isEmpty ? 'API Key Required' : null,
+                              validator: (value) => value!.isEmpty
+                                  ? 'Access Token Auth Required'
+                                  : null,
                               decoration: InputDecoration(
-                                labelText: 'API Key',
+                                labelText: 'Access Token Auth',
                                 labelStyle: TextStyle(
                                   color: isLoginFocused
                                       ? Theme.of(context).accentColor
@@ -165,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           .shadowColor
                                           .withOpacity(0.6),
                                 ),
-                                hintText: 'Enter Your API Key',
+                                hintText: 'Enter Your Access Token Auth',
                                 hintStyle: Theme.of(context)
                                     .textTheme
                                     .headline4!
